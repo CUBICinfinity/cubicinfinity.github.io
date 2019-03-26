@@ -11,10 +11,22 @@
   font-family: Arial, Helvetica, sans-serif;
 }
 
+html {
+  background-color: black;
+}
+
 body {
   margin: 0;
   background-color: #000
   font-family: Arial, Helvetica, sans-serif;
+  height: 100%;
+}
+
+a:visited {
+  color: white;
+}
+a:link {
+  color: white;
 }
 
 /* Style the top navigation bar */
@@ -69,12 +81,26 @@ h1 {
  text-align: center;
 }
 
+h2 {
+  color: white;
+  text-align: center;
+}
+
+h2:visited a {
+  color: white;
+}
+
+h2:link a {
+  color: white;
+}
+
 /* Style the content */
 .content {
   background-color: #000;
   padding: 10px;
   color: #FFF;
   text-align: center;
+  height: 100%;
 }
 
 /* Style the footer */
@@ -116,7 +142,7 @@ h1 {
   content: "";
   display: table;
   clear: both;
-  padding: auto;
+  padding: 5px;
 }
 
 img {
@@ -130,19 +156,18 @@ img {
 </head>
 <body>
 
-<div style="margin-top:46px;height:0px;">
+<div style="margin-top:46px;">
 
 <div class="topnav a">
-  <b class="b"><a href="#" class = "b">Jim Greene</a></b>
+  <b class="b"><a href="index.html" class = "b">Jim Greene</a></b>
   <a href="#bottom">Contact</a>
   <a href="#">Learn</a>
-  <a href="#index.html">Creations</a>
 </div>
 
 <div class="content">
-  <h1> About me and this site </h1>
-  <img src="human.png">
-  <p> <br/>I'm a developing data scientist studying at Brigham Young University - Idaho. <p> I'm married, from Florida, and a fan of user-powered content.<p> <br/>This website is a place for me share some of my work and provide content that others may enjoy or find useful. If you want to suggest a project, send me an email. </p> <br/><br/><br/><br/><br/>
+  <h1> Creations </h1>
+  <h2> <a href="#">k-Nearest-Neighbors Analysis</a> <h2/>
+  <p> A short study of predition accuracy with changing distances of clusters. </p> <br/><br/><br/><br/><br/>
 </div>
 
 <div class="footer">
