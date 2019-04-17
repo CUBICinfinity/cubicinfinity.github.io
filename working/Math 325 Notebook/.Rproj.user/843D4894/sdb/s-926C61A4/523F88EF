@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "---\ntitle: \"Student Housing -- Part II\"\noutput: \n  html_document:\n    theme: cerulean\n---\n\n```{r, include=FALSE}\nlibrary(mosaic)\nRent <- read.csv(\"../Data/Rent.csv\", header=TRUE)\n# To get the Rent data into your Console, \n# use the \"Environment >> Import Dataset\" command \n# in the upper right of your RStudio window.\n```\n\n<br />\n\n<!-- Instructions: \n\nUsing the Student Housing Analysis as an example, come up with an interesting question that could be answered with the \"Rent\" dataset that is provided above. \n\nWrite a Background that gives meaning to your question of interest.\n\nState your Question.\n\nPerform an appropriate \"Analysis\" that gives useful information for answering your question.\n\nInterpret your analysis and expound on your findings. -->\n\n\nDelete this sentence and complete your anlaysis here.\n\n\n```{r}\nhist(Rent$Price, xlab=\"Rent Prices\", main=\"BYU-I Approved Housing\", col=\"firebrick\")\n```\n\n\n\n\n\n\n\n\n",
+    "created" : 1474130477820.000,
+    "dirty" : true,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3871202452",
+    "id" : "523F88EF",
+    "lastKnownWriteTime" : 1473291567,
+    "last_content_update" : 1474134296627,
+    "path" : "C:/Users/Administrator/Desktop/Math 325 Notebook/Analyses/StudentHousing2.Rmd",
+    "project_path" : "Analyses/StudentHousing2.Rmd",
+    "properties" : {
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}

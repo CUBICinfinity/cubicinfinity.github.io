@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "---\ntitle: \"Movies\"\noutput: \n  html_document:\n    theme: cerulean\n---\n\n<div style=\"text-align:right;\">[Back to Table of Contents](../TextbookTOC.html)</div>\n\n```{r, include=FALSE}\nlibrary(mosaic)\nmovies <- read.csv(\"../Data/movies.csv\", header=TRUE)\nMoviesmpaa <- subset(movies, mpaa!=\" \")\nmpaaBudget <- subset(Moviesmpaa, budget!=\"NA\")\n\n```\n\n<br />\n\n#### Background\n\n\"You're a wizard, Harry!\"\n\n\"I'm a what?\"\n\n\"A wizard!\"\n\nHarry Potter and the Sorcerer's Stone (2001)\n\nDid you know that [*Harry Potter and the Sorcerer's Stone*](https://en.wikipedia.org/wiki/Harry_Potter_and_the_Philosopher%27s_Stone_(film))\nhad a production budget of over 125 million? Sounds like a lot, right? Try doubling that amount and then you will have the budget for movies such as, [*The Hobbit: An Unexpected Journey*](http://www.the-numbers.com/movie/budgets/), or [Captain America: Civil War](http://www.the-numbers.com/movie/budgets/). Have you ever wondered if the movie production budgets for PG-13 movies are generally higher than PG movies? Or R rated moives for that matter? You most likely haven't because you aren't an analyst for Warner Brothers and you probably don't sit around thinking about movie budgets. But I have! On occasion. And my curiosity had led me to ask this question: on average is there a difference in movie production budget based on movie ratings? \n\nI ask this question because I am already familiar with a study that was published through the [*Deseret News*](http://www.deseretnews.com/article/705374664/Where-have-all-the-PG-movies-gone.html?pg=all) investigating the number of movies released by rating and its relationship to the average gross by rating. It turns out on average that the gross of R rated movies, $15.53 M, is less than half the gross of G and PG rated movies, $38.95 M and $38.02 M, respectively. For this reason, we will now investigate the average moive production budget by rating. \n\nThe dataset that was used for this analysis was provided by [imdb.com](http://www.imdb.com/). It is not complete in the sense that it is missing G rated movies, but does include PG, PG-13, R, and NC-17 rated movies. The dataset originally contained 58788 rows of data, but has now been filtered to only include movies with defined budgets and mpaa ratings. The first three obversations are shown in the following table. After the filtering of the original dataset there are `r nrow(mpaaBudget)` observations.\n\n```{r, echo=FALSE}\nknitr::kable(mpaaBudget[c(1,2,3),c(\"title\",\"year\",\"length\",\"budget\",\"rating\", \"mpaa\")])\n```\n\n<br />\n\n#### Analysis\n\nThe following scatter plot...\n\n```{r, echo=FALSE}\nmpaaBudget$budget <- as.numeric(as.character(mpaaBudget$budget))\n ggplot(data=mpaaBudget, aes(x=mpaa, y=budget)) + geom_boxplot()  + theme(legend.position=\"none\") + labs(title=\"\") \n```\n\n\n```{r, echo=FALSE}\nmoviesr <- subset(movies, Romance == 1)\nmoviesa <- subset(movies, Action == 1)\nhead(moviesr)\nhead(moviesa)\n```\n\n<br />\n\n```{r, echo=FALSE}\noutputTable2 <- favstats(budget~mpaa, data=mpaaBudget)[c(2,3,4,5),]\nknitr::kable(outputTable2[,c(\"min\",\"Q1\",\"median\",\"mean\",\"Q3\",\"max\",\"n\")])\n\n```\n#### Interpretation\n\n",
+    "created" : 1474767632549.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3919702909",
+    "id" : "48E46C2A",
+    "lastKnownWriteTime" : 1474768152,
+    "last_content_update" : 1474768152288,
+    "path" : "C:/Users/Administrator/Downloads/Math 325 Notebook/Analyses/Movies_RobbinsP.Rmd",
+    "project_path" : null,
+    "properties" : {
+    },
+    "relative_order" : 6,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}

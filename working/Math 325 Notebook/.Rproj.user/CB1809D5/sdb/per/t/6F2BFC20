@@ -1,0 +1,21 @@
+{
+    "collab_server" : "",
+    "contents" : "---\ntitle: \"Multiple Logistic Regression\"\nauthor: \"Jim Greene\"\ndate: \"`r Sys.Date()`\"\noutput:\n  prettydoc::html_pretty:\n    theme: architect\n    highlight: github\n---\n\nThis analysis deals with the 2012 General Social Survey. In some of the questions, participants were given a word and told to choose the word out of five others that was most similar in meaning. In one of these, the 'wordj' question, 25.3% got the question right and 74.7% got it wrong. Below is a full table. For the sex column, 1 means male and 2 means female. For wordj, 1 is correct and 0 is incorrect.\n\n```{r, warning=F, include=F}\nGSS2012 <- read.table(\"../Data/GSS2012.csv\", sep=\"\\t\", header=TRUE)\nlibrary(car)\nlibrary(mosaic)\nlibrary(ResourceSelection)\nlibrary(pander)\nlibrary(DT)\n```\n\n```{r}\ndatatable(subset(GSS2012[, c(647, 38, 802)], wordj == 1 | wordj == 0))\n```\n</br>\nMy intention is to create a logistic regression model for the probability that someone will give the correct answer:\n$$\n  P(Y_i = 1|\\, x_{i1},x_{i2}) = \\frac{e^{β_0 + β_1X_{i1} + β_2X_{i2} + β_3X_{i1} X_{i2} }}{1+e^{β_0 + β_1X_{i1} + β_2X_{i2} + β_3X_{i1} X_{i2} }} = \\pi_i,\\text{ } x_{i1}=age, x_{i2}=sex\n$$\n\nI will test for all of these:\n$$\nH_0:β_0=0\n$$\n\n$$\nH_a:β_0≠0\n$$\n\n$$\nH_0:β_1=0\n$$\n\n$$\nH_a:β_1≠0\n$$\n$$\nH_0:β_2=0\n$$\n\n$$\nH_a:β_2≠0\n$$\n$$\nH_0:β_3=0\n$$\n\n$$\nH_a:β_3≠0\n$$\nLevel of significance:\n$$\n\\alpha = 0.05\n$$\n\n```{r, echo=T, warning=F}\nGSS2012.glm <- glm(wordj==1 ~ age + as.factor(sex) + age:as.factor(sex), data=GSS2012, family=binomial)\npander(summary(GSS2012.glm))\n```\n</br>\nI am using a Hosmer-Lemeshow Goodness of Fit Test to check he assumptions because there are no excessively repeated values.\n```{r, echo=T}\npander(hoslem.test(GSS2012.glm$y, GSS2012.glm$fitted))\n```\n\nThe significant values are the intercept ($\\beta_0$), the slope from the age factor ($\\beta_1$), and the change in intercept for females ($\\beta_2$).\n\n```{r, echo=T}\nGC <- GSS2012.glm$coefficients\nplot(wordj==1 ~ age, data=GSS2012, pch=16, main=\"General Social Survey 2012\", ylab=\"Probability of correctly answering the \\\"wordj\\\" question\", xlab=\"Age\")\ncurve(exp(GC[1]+GC[2]*x)/(1+exp(GC[1]+GC[2]*x)), add=TRUE, col='skyblue4', lwd=2)\ncurve(exp(GC[1]+GC[3]+(GC[2]+GC[4])*x)/(1+exp(GC[1]+GC[3]+(GC[2]+GC[4])*x)), add=TRUE, col='firebrick', lwd=2)\nlegend(67, .42, legend=c(\"Males\", \"Females\"), col=c(\"skyblue4\", \"firebrick\"), lty=1:1, cex=1.2, box.lty=0, lwd=2)\n```\n\nIn the plot above, the lines intersect at about age 56 1/2. The p-value for the difference in slopes is not significant enough so I will assume that there is no real difference in the slopes and the observed intersection is not meaningful.\nWhat I can confidently say is that males and females both perform slightly worse with age and this is the model that includes the significant values. This model includes the significant $\\beta$ values:\n$$\n  P(Y_i = 1|\\, x_{i1},x_{i2}) = \\frac{e^{-0.8229 - 0.01685X_{i1} - 0.7304X_{i2} }}{1+e^{-0.8229 - 0.01685X_{i1} - 0.7304X_{i2} }} = \\pi_i,\\text{ } x_{i1}=age, x_{i2}=sex\n$$\nPlugging in a gender and age produces the probability.\n\nThe odds of answering correctly for each age is 98.3% ($e^{- 0.01685}$) of the odds of the previous age.\n\nThe other significant value is the change in intercept. Females have 52% ($1-e^{- 0.7304}$) lower odds of answering correctly than males.",
+    "created" : 1523645938113.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "479646363",
+    "id" : "6F2BFC20",
+    "lastKnownWriteTime" : 1523646838,
+    "last_content_update" : 1523646838256,
+    "path" : "C:/Users/Jim/Desktop/MATH 325/Math 325 Notebook/Analyses/MyMultipleLogistic.Rmd",
+    "project_path" : "Analyses/MyMultipleLogistic.Rmd",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 11,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}

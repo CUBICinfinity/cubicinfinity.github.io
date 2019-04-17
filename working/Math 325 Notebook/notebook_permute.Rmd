@@ -1,0 +1,54 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r, include=F}
+library(car)
+library(mosaic)
+library(ResourceSelection)
+library(pander)
+# more
+library(DT)
+library(ggplot2)
+library(dplyr)
+```
+
+
+```{r}
+set.seed(121)
+sample1 <- rnorm(30, 185, 8)
+sample2 <- sample1 - rnorm(30, 0, 3.5)
+theData <- data.frame(values = c(sample1,sample2), group = rep(c(1,2), each=30), id = rep(c(1:30),times=2))
+View(theData)
+with(theData, hist(values[group==1] - values[group==2]))
+```
+
+```{r}
+myTest <- t.test(values ~ group, data = theData, paired=T, mu=0)
+```
+
+```{r}
+observedTestStat <- myTest$statistic
+```
+
+```{r}
+N <- 2000
+permutedTestStats <- rep(NA, N)
+for (i in 1:N)
+{
+  permutedData <- sample(x=c(1,-1), size=30, replace=T)
+  permutedTest <- with(theData, t.test(permutedData*(values[group==1] - values[group==2]), mu=0))
+  permutedTestStats[i] <- permutedTest$statistic
+}
+hist(permutedTestStats)
+abline(v=observedTestStat)
+```
+
+```{r}
+observedTestStat
+sum(permutedTestStats >= observedTestStat)/N
+sum(permutedTestStats <= observedTestStat)/N
+sum(permutedTestStats <= observedTestStat)/N * 2
+```
+

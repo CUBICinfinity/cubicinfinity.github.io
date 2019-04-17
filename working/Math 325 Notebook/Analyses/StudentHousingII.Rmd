@@ -1,0 +1,57 @@
+---
+title: "Student Housing Costs"
+output: 
+  html_document:
+    theme: cerulean
+    code_folding: hide
+    toc: true
+    toc_float: true
+---
+
+```{r, include=FALSE}
+library(mosaic)
+library(DT) # If you get an error stating: 
+            # Error in library(DT): there is no package called 'DT'
+            # You will need to run: install.packages("DT") 
+            # in your Console, then try "Knit HTML" again.
+Rent <- read.csv("../Data/Rent.csv", header=TRUE)
+```
+
+<br />
+
+## Background
+
+Stephanie[^1] is a student that will be starting school at BYU-Idaho next semester. Here is a copy of the email request for information that she sent.
+
+"Hi. My name is Stephanie. I would like to learn about what housing options I have for living at BYU-Idaho next semester. It will be my first semester there, so I would like to find something that is close to campus and around $300 a month in rent. I'm not too picky on roomates, but I would like somewhere that has a lot of people around so I can get to know as many people as possible. Thanks in advance!"
+
+Use the data from the [BYU-Idaho Housing Website](https://web.byui.edu/tis/search) to prepare an Analysis that will answer Stephanie's questions and give her some recommendations on a few apartments that best meet her criterions above. However, also be sure to demonstrate all of her options to her.
+
+For your convenience, the first three observations of a dataset pulled from the BYUI website are shown in the following table. There are a total of `r nrow(Rent)` observations in the dataset.
+
+<!-- Hint, you should probably subset the Rent dataset to only show the "Approved Women's Housing" since Stephanie won't be interested in Male Housing options. Also, you can edit this background however you wish when completing your analysis. Notice how this text in green doesn't show up in the HTML output because we used the HTML comment tags around this text. --> 
+
+```{r}
+womens <- subset(Rent, Gender=="F")
+datatable(womens, extensions="Responsive", options=list(lengthMenu = c(3,10,30)))
+```
+
+
+## Analysis
+```{r}
+
+View(Rent)
+```
+
+
+## Interpretation
+
+
+
+
+
+
+
+
+
+[^1]: Note that Stephanie is a fictional character who is based on real experiences of many faculty and staff here at BYU-Idaho.

@@ -1,0 +1,555 @@
+---
+title: "Classic Kaggle House Prices Regression"
+date: "March 16, 2019"
+output: 
+  html_document:
+    code_folding: hide
+    theme: spacelab
+    highlight: textmate
+---
+
+#### My objective is to do my best to predict the prices of houses from the Kaggle dataset with the time available using linear regression.
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(car)
+library(DT)
+setwd("C:/Users/Jim/Desktop/MATH 325/Math 325 Notebook")
+house <- read.csv('Math_425_Project_Data/data/house_train.csv')
+```
+
+
+#### There's a lot of categorical data, so I'm going to figure out how I want to handle it.
+```{r, include = F}
+# View(house)
+```
+
+    View(house)
+
+#### I organized the description file so it's easier to read. I should have just pasted it into Excel. I wasted a lot of time there.
+
+#### This code lets me see where the NAs are:
+```{r}
+empty_list <- rep(0, length(house[1,]) - 1)
+
+NAcounts <- data.frame(empty_list, empty_list, empty_list)
+colnames(NAcounts) <- c('Column', 'NA_Counts', 'NA_Ratio')
+
+for (i in 1:length(house[1,])) {
+  NAcounts[i,1] <- as.character(colnames(house))[i]
+  NAcounts[i,2] <- sum(is.na(house[,i]))
+  NAcounts[i,3] <- mean(is.na(house[,i]))
+}
+
+# View(NAcounts)
+datatable(NAcounts)
+```
+
+#### Lets do this:
+```{r, include = T}
+# HouseSummary <- cbind(NAcounts, empty_list)
+# colnames(HouseSummary) <- c('Column', 'NA_Counts', 'NA_Ratio', 'Type')
+# 
+# house_t <- tibble(house)
+# 
+# for (i in 1:length(house[1,])) {
+#   HouseSummary[i,4] <- typeof(house_t[,i])
+# }
+
+# View(HouseSummary)
+# This didn't work for me.
+```
+
+```{r, include = FALSE}
+str(house)
+```
+    str(house)
+
+#### Well, lets just get to work.
+```{r, include = FALSE}
+# PoolQC is mostly NAs
+table(house$PoolQC)
+
+# MiscFeature is also a rare occurance
+table(house$MiscFeature)
+
+# This is good for now
+table(house$MiscVal)
+
+# I could label encode this
+table(house$Alley)
+
+# Label encode
+table(house$Fence)
+
+# Grab values
+table(house$FireplaceQu) # this is better than using unique() because I can check the counts
+
+# This is quantitative. "Linear feet of street connected to property"
+# What does an NA mean? Probably just missing. There are enough NAs that I don't want to drop this column.
+# I'm going to impute the median.
+unique(house$LotFrontage)
+lotfront_med <- median(drop_na(house, LotFrontage)$LotFrontage)
+
+# I would like to just collapse it to a binary 'HasGarage'. But I want this to be quality data.
+# Note: In every place that these are NA it means there is no garage.
+table(house$GarageQual) # some are VERY short on observations
+table(house$GarageCond) # some are VERY short on observations
+table(house$GarageType) # some of these are real short on observations
+table(house$GarageYrBlt) # Not sure how to deal with this one. I'll match the year built date.
+table(house$GarageFinish) # just fine
+
+# Will assume NAs are 'None' and 0, respectively
+table(house$MasVnrType)
+table(house$MasVnrArea)
+
+# Hmm. And this has one NA.
+table(house$Electrical)
+
+# These are factors
+table(house$MSSubClass)
+```
+
+    # PoolQC is mostly NAs
+    table(house$PoolQC)
+    
+    # MiscFeature is also a rare occurance
+    table(house$MiscFeature)
+    
+    # This is good for now
+    table(house$MiscVal)
+    
+    # I could label encode this
+    table(house$Alley)
+    
+    # Label encode
+    table(house$Fence)
+    
+    # Grab values
+    table(house$FireplaceQu) # this is better than using unique() because I can check the counts
+    
+    # This is quantitative. "Linear feet of street connected to property"
+    # What does an NA mean? Probably just missing. There are enough NAs that I don't want to drop this column.
+    # I'm going to impute the median.
+    unique(house$LotFrontage)
+    lotfront_med <- median(drop_na(house, LotFrontage)$LotFrontage)
+    
+    # I would like to just collapse it to a binary 'HasGarage'. But I want this to be quality data.
+    # Note: In every place that these are NA it means there is no garage.
+    table(house$GarageQual) # some are VERY short on observations
+    table(house$GarageCond) # some are VERY short on observations
+    table(house$GarageType) # some of these are real short on observations
+    table(house$GarageYrBlt) # Not sure how to deal with this one. I'll match the year built date.
+    table(house$GarageFinish) # just fine
+    
+    # Will assume NAs are 'None' and 0, respectively
+    table(house$MasVnrType)
+    table(house$MasVnrArea)
+    
+    # Hmm. And this has one NA.
+    table(house$Electrical)
+    
+    # These are factors
+    table(house$MSSubClass)
+
+```{r}
+palette(c("red","red","red","blue","blue","orange","orange","black","blue","blue","red","red","blue","orange","blue","blue"))
+plot(log(SalePrice) ~ MSSubClass, data = house, col = factor(MSSubClass))
+plot(log(SalePrice) ~ YearBuilt, data = house, col = factor(MSSubClass))
+palette("default")
+plot(log(SalePrice) ~ YearBuilt, data = house, col = factor(MSSubClass))
+
+
+```
+
+#### I won't worry about this in my model
+
+#### Cleaning
+```{r}
+house2 <- house %>% 
+  mutate(HasPool = !is.na(PoolQC)) %>%  
+  select(-PoolQC) %>% 
+  mutate(HasBonus = !is.na(MiscFeature)) %>% 
+  select(-MiscFeature) %>% 
+  mutate(Alley = ifelse(is.na(Alley), 0, ifelse(Alley == 'Grvl', 1, 2))) %>%
+  mutate(Fence = ifelse(Fence == 'GdPrv', 4, ifelse(Fence == 'MnPrv', 3, ifelse(Fence == 'GdWo', 2, ifelse(Fence == 'MnWw', 1, 0))))) %>% 
+  mutate(Fence = replace_na(Fence, 0)) %>% # ifelse didn't seem to like commands like is.na()
+  mutate(FireplaceQu = case_when(FireplaceQu == 'Ex' ~ 5, FireplaceQu == 'Gd' ~ 4, FireplaceQu == 'TA' ~ 3, FireplaceQu == 'Fa' ~ 2, FireplaceQu == 'Po' ~ 1)) %>% 
+  mutate(FireplaceQu = replace_na(FireplaceQu, 0)) %>% 
+  mutate(LotFrontage = replace_na(LotFrontage, lotfront_med)) %>% # Can't use this one for Math 425
+  mutate(GarageType = fct_explicit_na(GarageType, 'None')) %>% # Useful little function
+  mutate(GarageFinish = case_when(GarageFinish == 'Fin' ~ 3, GarageFinish == 'Rfn' ~ 2, GarageFinish == 'Unf' ~ 1)) %>% 
+  mutate(GarageFinish = replace_na(GarageFinish, 0)) %>% 
+  mutate(GarageCond = case_when(GarageCond == 'Ex' | GarageCond == 'Gd' ~ 3, GarageCond == 'TA' ~ 2, GarageCond == 'Fa' | GarageCond == 'Po' ~ 1)) %>% 
+  mutate(GarageCond = replace_na(GarageCond, 0)) %>% 
+  mutate(GarageQual = case_when(GarageQual == 'Ex' | GarageQual == 'Gd' ~ 3, GarageQual == 'TA' ~ 2, GarageQual == 'Fa' | GarageQual == 'Po' ~ 1)) %>% 
+  mutate(GarageQual = replace_na(GarageQual, 0)) %>% 
+  mutate(MasVnrType = replace_na(MasVnrType, 'None')) %>%  # This works because 'None' is already a factor
+  mutate(MasVnrArea = replace_na(MasVnrArea, 0)) %>% 
+  select(-Electrical) # I'm not too worried.
+  
+# This method works, so why not?
+house2$GarageYrBlt[is.na(house2$GarageYrBlt)] <- house2$YearBuilt[is.na(house2$GarageYrBlt)] # Having imputed those values, I can't use GarageYrBlt for a model in Math 425.
+
+# At this rate I won't get it done, so unfortunately I have to move on to building a model.
+
+#View(house2)
+```
+
+#### Exploring a little
+```{r}
+# Just checking 
+summary(lm(house$SalePrice ~ house$Id))
+
+
+# Sample, because this takes too long
+pairs(sample_n(cbind(house2$SalePrice,house2[,2:10]), 300))
+
+tibble(house2)
+
+#View(abs(cor(house))[,81])
+
+plot(log(SalePrice) ~ Street, data = house2)# Street is worth keeping.
+plot(log(SalePrice) ~ YearBuilt, col = factor(Alley), data = house2, pch = 16)
+plot(log(SalePrice) ~ Alley, data = house2)
+plot(log(SalePrice) ~ LotShape, data = house) # There's a trend, but I'm going to ignore it.
+
+plot(log(SalePrice) ~ YearBuilt, data = house2, col = MSZoning)
+
+house2 %>% 
+  ggplot(aes(y = log(SalePrice), x = YearBuilt, col = MSZoning)) + 
+  geom_point() +
+  facet_wrap(house2$MSZoning)
+
+# This also takes too long. I can't do this sort of thing with all of the columns
+```
+
+#### Pairs plots
+```{r}
+colnames(house2)
+
+pairs(sample_n(cbind(log(house2$SalePrice),house2[,2:10]), 200))
+# I'll take LotArea. #5
+pairs(sample_n(cbind(log(house2$SalePrice),house2[,11:20]), 200))
+# OverallQual, YearBuilt #18, 20
+pairs(sample_n(cbind(log(house2$SalePrice),house2[,21:30]), 200))
+# maybe YearRemodAdd, maybe MasVnrArea #21, 27
+pairs(sample_n(cbind(log(house2$SalePrice),house2[,31:40]), 200))
+# TotalBsmtSF #39
+pairs(sample_n(cbind(log(house2$SalePrice),house2[,41:50]), 200))
+# X1stFlrSF, X2ndFlrSF, GrLivArea #43, 44, 46
+pairs(sample_n(cbind(log(house2$SalePrice),house2[,51:60]), 200))
+# TotRmsAbvGrd #54
+pairs(sample_n(cbind(log(house2$SalePrice),house2[,61:70]), 200))
+# GarageArea #62
+pairs(sample_n(cbind(log(house2$SalePrice),house2[,71:80]), 200))
+# HasPool, HasBonus #79, 80 'table(house2$HasPool)': There are only 7 houses with a pool.
+```
+
+#### Code you'll thank me for not running in this document:
+
+    summary(lm(log(SalePrice) ~ LotArea, data = house2))
+    # adj_r2 = 0.06557
+    summary(lm(log(SalePrice) ~ YearBuilt, data = house2))
+    # Adjusted R-squared:  0.3436
+    summary(lm(log(SalePrice) ~ LotArea + YearBuilt, data = house2))
+    # adj_r2 = 0.4053
+    summary(lm(log(SalePrice) ~ YearBuilt + LotArea:YearBuilt, data = house2))
+    # adj_r2 = 0.4054
+    summary(lm(log(SalePrice) ~ LotArea + YearBuilt + LotArea:YearBuilt, data = house2))
+    # adj_r2 = 0.4056 #these hardly increase
+    summary(lm(log(SalePrice) ~ LotArea + YearBuilt + OverallQual, data = house2))
+    # Adjusted R-squared:  0.7208
+    summary(lm(log(SalePrice) ~ LotArea + YearBuilt + YearBuilt:OverallQual, data = house2))
+    # Adjusted R-squared:  0.7207
+    summary(lm(log(SalePrice) ~ LotArea + YearBuilt + OverallQual + TotalBsmtSF, data = house2))
+    # Adjusted R-squared:  0.7425
+    summary(lm(log(SalePrice) ~ LotArea + YearBuilt + OverallQual + TotalBsmtSF + X1stFlrSF, data = house2))
+    # Adjusted R-squared:  0.757
+    summary(lm(log(SalePrice) ~ LotArea + YearBuilt + OverallQual + TotalBsmtSF + X1stFlrSF + X2ndFlrSF, data = house2))
+    # Adjusted R-squared:  0.8055
+    summary(lm(log(SalePrice) ~ LotArea + YearBuilt + OverallQual + TotalBsmtSF + X1stFlrSF + X2ndFlrSF + GrLivArea, data = house2))
+    # Adjusted R-squared:  0.8054  That didn't increase it and I think because this is a lot of the same information.
+    summary(lm(log(SalePrice) ~ LotArea + YearBuilt + OverallQual + TotalBsmtSF + X1stFlrSF + X2ndFlrSF + X1stFlrSF:X2ndFlrSF, data = house2))
+    # Adjusted R-squared:  0.8111  I might keep that.
+    summary(lm(log(SalePrice) ~ LotArea + YearBuilt + OverallQual + TotalBsmtSF + X1stFlrSF + X2ndFlrSF + X1stFlrSF:X2ndFlrSF + GarageArea, data = house2))
+    # Adjusted R-squared:   0.82
+    summary(lm(log(SalePrice) ~ LotArea + YearBuilt + OverallQual + TotalBsmtSF + X1stFlrSF + X2ndFlrSF + X1stFlrSF:X2ndFlrSF + GarageArea + YearRemodAdd, data = house2))
+    # Adjusted R-squared:  0.8276
+    summary(lm(log(SalePrice) ~ LotArea + YearBuilt + OverallQual + TotalBsmtSF + X1stFlrSF + X2ndFlrSF + X1stFlrSF:X2ndFlrSF + GarageArea + YearRemodAdd + MasVnrArea, data = house2))
+    # Adjusted R-squared:  0.8276 # No increase
+    summary(lm(log(SalePrice) ~ MasVnrArea, data = house2))
+    
+    # let's pause to check some of this:
+    
+    ## Not using this:
+    # adj_r2s <- rep(0, 12)
+    # i <- 1
+    # 
+    # for (attribute in c(log(house2$SalePrice), house2$LotArea, house2$YearBuilt, house2$OverallQual, house2$TotalBsmtSF, house2$X1stFlrSF, house2$X2ndFlrSF, house2$GarageArea, house2$YearRemodAdd, house2$MasVnrArea, house2$HasPool, house2$HasBonus)) {
+    #   lm0 <- lm(log(house2$SalePrice) ~ attribute)
+    #   adj_r2s[i] <- 
+    #
+    # }
+
+
+
+```{r}
+#View(cbind(Attribute = c("log(house2$SalePrice)", "house2$LotArea", "house2$YearBuilt", "house2$OverallQual", "house2$TotalBsmtSF", "house2$X1stFlrSF", "house2$X2ndFlrSF", "house2$GarageArea", "house2$YearRemodAdd", "house2$MasVnrArea", "house2$HasPool", "house2$HasBonus"), '|Correlation|' = abs(cor(cbind(log(house2$SalePrice), house2$LotArea, house2$YearBuilt, house2$OverallQual, house2$TotalBsmtSF, house2$X1stFlrSF, house2$X2ndFlrSF, house2$GarageArea, house2$YearRemodAdd, house2$MasVnrArea, house2$HasPool, house2$HasBonus)))[,1]))
+
+house3 <- data.frame(LogPrice = log(house2$SalePrice), Lot = house2$LotArea, Year = house2$YearBuilt, Quality = house2$OverallQual, Basement = house2$TotalBsmtSF, X1stFlr = house2$X1stFlrSF, X2ndFlr = house2$X2ndFlrSF, Garage = house2$GarageArea, Remodel = house2$YearRemodAdd, Masonry = house2$MasVnrArea, Pool = house2$HasPool, Bonus = house2$HasBonus)
+
+# pairs(house3)
+
+house3 <- cbind(house3, MasonType = house2$MasVnrType) %>% 
+  mutate(Stone = MasonType == 'Stone') %>% 
+  mutate(BrkCmn = MasonType == 'BrkCmn') %>% 
+  mutate(BrkFace = MasonType == 'BrkFace') %>% 
+  mutate(MasonType = case_when(MasonType == 'None' ~ 0, MasonType == 'BrkCmn' ~ 1, MasonType == 'BrkFace' ~ 2, MasonType == 'Stone' ~ 3))
+
+pairs(sample_n(house3, 250), col = factor(house3$MasonType))
+
+```
+
+#### I was looking for the wrong thing here.
+
+#### Some more test models
+
+    summary(lm(LogPrice ~ Lot + Year + Quality + Basement + X1stFlr + X2ndFlr + X1stFlr:X2ndFlr + Garage + Remodel + Stone:Masonry, data = house3)) # The Masonry significance levels aren't that high.
+    
+    summary(lm(LogPrice ~ Lot + Year + Quality + Basement + X1stFlr + X2ndFlr + X1stFlr:X2ndFlr + Garage + Remodel + Stone:Masonry + Pool + Bonus, data = house3))
+    
+    summary(lm(LogPrice ~ Lot + Year + Quality + Basement + X1stFlr + X2ndFlr + X1stFlr:X2ndFlr + Garage + Remodel + Stone:Masonry + Pool, data = house3))
+    
+    summary(lm(LogPrice ~ Lot + Year + Quality + Basement + X1stFlr + X2ndFlr + X1stFlr:X2ndFlr + Garage + Remodel + Pool, data = house3)) # Best score of all of these
+    
+    summary(lm(LogPrice ~ Year + Quality + Basement + X1stFlr + X2ndFlr + X1stFlr:X2ndFlr + Garage + Remodel + Pool, data = house3)) # Nope. It's better with Lot.
+    
+    # A couple more things though:
+    summary(lm(LogPrice ~ Year + Quality + Basement + X1stFlr + X2ndFlr + X1stFlr:X2ndFlr + Garage + Remodel + Pool + Masonry:MasonType, data = house3))
+    
+    summary(lm(LogPrice ~ Year + Quality + Basement + X1stFlr + X2ndFlr + Garage + Remodel + Pool, data = house3))
+
+
+#### This is my Final Model:
+
+```{r}
+my_model <- lm(LogPrice ~ Lot + Year + Quality + Basement + X1stFlr + X2ndFlr + X1stFlr:X2ndFlr + Garage + Remodel + Pool, data = house3)
+
+summary(my_model)
+```
+
+```{r}
+plot(my_model, which = 1)
+```
+
+#### I have no way to interpret that plot.
+
+#### How about this though?
+```{r}
+lot_lm <- lm(LogPrice ~ Lot, data = house3)
+plot(lot_lm, which = 1)
+
+boxCox(lot_lm)
+
+lot_lm2 <- lm(LogPrice ~ log(Lot), data = house3)
+plot(lot_lm2, which = 1)
+
+lot_lm3 <- lm(LogPrice ~ I(Lot^2), data = house3)
+plot(lot_lm3, which = 1)
+# I like Logging it better
+summary(lot_lm2)
+
+my_model2 <- lm(LogPrice ~ log(Lot) + Year + Quality + Basement + X1stFlr + X2ndFlr + X1stFlr:X2ndFlr + Garage + Remodel + Pool, data = house3)
+
+summary(my_model2) # Yeah, that's more like it.
+```
+
+#### Much better
+
+#### Validation:
+```{r}
+# I realize I didn't explore with a sample of the data, but I can still test by creating the model from a smaller sample.
+training_rows <- sample(1:length(house3$LogPrice), length(house3$LogPrice)*0.8)
+
+training_data <- house3[training_rows,]
+training_data$Price <- exp(training_data$LogPrice) # I had logged the prices, after all. This is y_hat_i
+
+testing_data <- house3[-training_rows,]
+testing_data$Price <- exp(testing_data$LogPrice)
+
+final_model <- lm(log(Price) ~ log(Lot) + Year + Quality + Basement + X1stFlr + X2ndFlr + X1stFlr:X2ndFlr + Garage + Remodel + Pool, data = training_data)
+
+summary(final_model)
+
+predictions <- exp(predict.lm(final_model, new_data = testing_data)) # I must be doing something wrong here.
+
+mean_price <- mean(testing_data$Price) # y_bar
+targets <- testing_data$Price # y_i
+SSE <- sum(predictions - targets)^2 # Sum of squared residuals
+SSTO <- sum(targets - mean_price)^2 # Total sum of squares
+
+DF <- length(targets) - length(final_model$coefficients) # Degrees of freedom
+
+print("Adjusted R-Squared:")
+(Adjusted_R_Squared <- 1 - (length(targets) - 1)/DF * SSE/SSTO)
+```
+
+
+#### Troubleshooting
+    > predict(final_model, data.frame(training_data[2,]))
+        1343 
+    12.52126 
+    > exp(predict(final_model, data.frame(training_data[2,])))
+        1343 
+    274103.6 
+    > training_data[2,]
+         LogPrice  Lot Year Quality Basement X1stFlr X2ndFlr Garage Remodel Masonry  Pool Bonus MasonType Stone BrkCmn BrkFace
+1343 12.33929 9375 2002       8     1284    1284     885    647    2002     149 FALSE FALSE         2 FALSE  FALSE    TRUE
+      Price
+1343 228500
+
+    > predict(final_model, data.frame(testing_data[2,]))
+      11 
+    11.75375 
+    > exp(predict(final_model, data.frame(testing_data[2,])))
+        11 
+    127230 
+    > testing_data[2,]
+       LogPrice   Lot Year Quality Basement X1stFlr X2ndFlr Garage Remodel Masonry  Pool Bonus MasonType Stone BrkCmn BrkFace
+    11 11.77144 11200 1965       5     1040    1040       0    384    1965       0 FALSE FALSE         0 FALSE  FALSE   FALSE
+        Price
+    11 129500
+    
+    > sum(predictions - targets)^2
+    [1] 5.036271e+13
+    > sum((predictions - targets)^2)
+    [1] 1.448868e+13
+    
+#### I might have figured this out now:
+```{r}
+mean_price <- mean(testing_data$Price) # y_bar
+targets <- testing_data$Price # y_i
+SSE <- sum((predictions - targets)^2) # Sum of squared residuals
+SSTO <- sum((targets - mean_price)^2) # Total sum of squares
+
+DF <- length(targets) - length(final_model$coefficients) # Degrees of freedom
+
+print("Adjusted R-Squared:")
+(Adjusted_R_Squared <- 1 - (length(targets) - 1)/DF * SSE/SSTO)
+```
+
+#### That's better, but still pretty bad. Maybe I can look at what the normal R-Squared is:
+```{r}
+print("R-Squared:")
+(Adjusted_R_Squared <- 1 - SSE/SSTO)
+```
+
+#### Well, according to this, I'm really overfitting.
+
+```{r}
+new_final_model <- lm(log(Price) ~ log(Lot) + Year + Quality + Basement + X1stFlr + Garage + X2ndFlr, data = training_data)
+
+summary(new_final_model)
+
+predictions <- exp(predict.lm(final_model, new_data = testing_data))
+
+mean_price <- mean(testing_data$Price) # y_bar
+targets <- testing_data$Price # y_i
+SSE <- sum((predictions - targets)^2) # Sum of squared residuals
+SSTO <- sum((targets - mean_price)^2) # Total sum of squares
+
+DF <- length(targets) - length(final_model$coefficients) # Degrees of freedom
+
+print("Adjusted R-Squared:")
+(Adjusted_R_Squared <- 1 - (length(targets) - 1)/DF * SSE/SSTO)
+```
+
+```{r}
+new_final_model <- lm(log(Price) ~ Year, data = training_data)
+
+summary(new_final_model)
+
+predictions <- exp(predict.lm(final_model, new_data = data.frame(testing_data)))
+
+mean_price <- mean(testing_data$Price) # y_bar
+targets <- testing_data$Price # y_i
+SSE <- sum((predictions - targets)^2) # Sum of squared residuals
+SSTO <- sum((targets - mean_price)^2) # Total sum of squares
+
+DF <- length(targets) - length(final_model$coefficients) # Degrees of freedom
+
+print("Adjusted R-Squared:")
+(Adjusted_R_Squared <- 1 - (length(targets) - 1)/DF * SSE/SSTO)
+```
+
+#### I'm clearly doing something wrong with the predict function.
+
+### Plots
+```{r}
+smaller_data <- sample_n(house3, 400)
+
+plot(LogPrice ~ Year, data = smaller_data)
+abline(lm(LogPrice ~ Year, data = house3))
+
+plot(LogPrice ~ Quality, data = smaller_data)
+abline(lm(LogPrice ~ Quality, data = house3))
+
+plot(LogPrice ~ Basement, data = smaller_data)
+abline(lm(LogPrice ~ Basement, data = house3))
+
+plot(LogPrice ~ X1stFlr, data = smaller_data)
+abline(lm(LogPrice ~ X1stFlr, data = house3))
+
+plot(LogPrice ~ X2ndFlr, data = smaller_data)
+abline(lm(LogPrice ~ X2ndFlr, data = house3))
+```
+
+#### The graph for the second floor shows that the line is tilted to account for all the single floor houses. It would be better if I had separated this in the model.
+```{r}
+
+library(plotly) # Code for 3D plot below coppied from notebook
+library(reshape2)
+#Perform the multiple regression
+three_d_lm <- lm(LogPrice ~ X1stFlr + X2ndFlr + X1stFlr:X2ndFlr, data = house3)
+
+#Graph Resolution (more important for more complex shapes)
+graph_reso <- 20
+
+#Setup Axis
+axis_x <- seq(min(smaller_data$X1stFlr), max(smaller_data$X1stFlr), by = graph_reso)
+axis_y <- seq(min(smaller_data$X2ndFlr), max(smaller_data$X2ndFlr), by = graph_reso)
+
+#Sample points
+house_surface <- expand.grid(X1stFlr = axis_x, X2ndFlr = axis_y, KEEP.OUT.ATTRS = F)
+house_surface$Z <- predict.lm(three_d_lm, newdata = house_surface)
+house_surface <- acast(house_surface, X2ndFlr ~ X1stFlr, value.var = "Z") #y ~ x
+
+#Create scatterplot
+plot_ly(smaller_data, 
+        x = ~X1stFlr, 
+        y = ~X2ndFlr, 
+        z = ~LogPrice,
+        text = rownames(smaller_data), 
+        type = "scatter3d", 
+        mode = "markers") %>%
+  add_trace(z = house_surface,
+            x = axis_x,
+            y = axis_y,
+            type = "surface")
+
+plot(LogPrice ~ Garage, data = smaller_data)
+abline(lm(LogPrice ~ Garage, data = house3))
+
+plot(LogPrice ~ Remodel, data = smaller_data)
+abline(lm(LogPrice ~ Remodel, data = house3))
+
+palette(c("firebrick", "skyblue"))
+plot(LogPrice ~ Year, data = house3, col = factor(house3$Pool), pch = 16, cex = 0.5, main = "Blue dots mean the house has a pool")
+pool_lm <- lm(LogPrice ~ Year + Pool, data = house3)
+abline(pool_lm$coef[1], pool_lm$coef[2], lwd = 2, col = "firebrick")
+abline(pool_lm$coef[1] + pool_lm$coef[3], pool_lm$coef[2], lwd = 2, col = "skyblue")
+
+
+# my_model2 <- lm(LogPrice ~ log(Lot) + Year + Quality + Basement + X1stFlr + X2ndFlr + X1stFlr:X2ndFlr + Garage + Remodel + Pool, data = house3)
+```

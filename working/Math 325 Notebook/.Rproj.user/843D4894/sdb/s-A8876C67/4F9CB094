@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "---\ntitle: \"Table of Contents\"\noutput: \n  html_document:\n    theme: cerulean\n---\n\n<br />\n\n[Instructions](./Textbook/TextbookTOCInstructions.html)\n\n[Content Map](./Textbook/ContentMap.png)\n\n\n### Rubrics\n\n* [Analysis Rubric](./Analyses/AnalysisRubric.html)\n    \n    * [Good Analysis Example](./Analyses/StudentHousing.html) and its [Critique](./Analyses/Critiques/StudentHousingCritique.html)\n        \n    * [Poor Analysis Example](./Analyses/StudentHousingPOOR.html) and its [Critique](./Analyses/Critiques/StudentHousingPOORCritique.html)\n\n* [Critique Rubric](./Analyses/Critiques/CritiqueRubric.html)\n\n\n### Statistics\n\n* [Describing Data](./Textbook/DescribingData.html)\n\n    * [Numerical Summaries](./Textbook/Describing Data/NumericalSummaries.html)\n    \n    * [Graphical Summaries](./Textbook/Describing Data/GraphicalSummaries.html)\n\n\n### Software\n\n<div style=\"padding-left:15px;\">\n\n#### Using R\n\n* [Introduction to RStudio](./Textbook/R Code/RIntro.html)\n\n* [R Code Tutorial](./Textbook/RCode.html)\n\n* [R Code Cheat Sheet](https://cran.r-project.org/doc/contrib/Short-refcard.pdf)\n\n#### Using R-Markdown\n\n* [Linking to Material](./Textbook/R Code/Linking.html)\n\n* [R-Markdown Hints](./Textbook/R Code/RMarkdownHints.html) \n\n* [R-Markdown Cheatsheet](https://www.rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf) \n\n* [R-Markdown Website](http://rmarkdown.rstudio.com/html_document_format.html)\n\n\n#### Outside Resources\n\n* [r-tutor.com](http://www.r-tutor.com/elementary-statistics)\n\n* [Quick-R](http://www.statmethods.net/)\n\n* [Google](http://www.google.com/) your question: \"do _____ in r\"\n\n</div>\n\n",
+    "created" : 1471968685026.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2675606929",
+    "id" : "4F9CB094",
+    "lastKnownWriteTime" : 1473570398,
+    "last_content_update" : 1473570398395,
+    "path" : "C:/Users/Administrator/Desktop/Math 325 Notebook/TextbookTOC.Rmd",
+    "project_path" : "TextbookTOC.Rmd",
+    "properties" : {
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}

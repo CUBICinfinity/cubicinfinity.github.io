@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "---\ntitle: \"Movies\"\noutput: \n  html_document:\n    theme: cerulean\n---\n\n```{r, include=FALSE}\nlibrary(mosaic)\nmovies <- read.csv(\"../Data/movies.csv\", header=TRUE)\n# To get the movies data into your Console, \n# use the \"Environment >> Import Dataset\" command \n# in the upper right of your RStudio window.\n```\n\n<br />\n\n<!-- Instructions: Come up with an interesting question that could be answered with the \"movies\" dataset that is provided above. \n\nWrite a Background that gives meaning to your question of interest.\n\nState your Question.\n\nPerform an appropriate \"Analysis\" that gives useful information for answering your question.\n\nInterpret your analysis and expound on your findings. -->\n\n\nDelete this line and complete your analysis here. (Click on the link for details about the [movies](https://vincentarelbundock.github.io/Rdatasets/doc/ggplot2/movies.html) dataset.)\n\n\n\n\n",
+    "created" : 1473572886745.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "4095393618",
+    "id" : "94FCE7E2",
+    "lastKnownWriteTime" : 1473572999,
+    "last_content_update" : 1473572999190,
+    "path" : "C:/Users/Administrator/Desktop/Math 325 Notebook/Analyses/Movies.Rmd",
+    "project_path" : "Analyses/Movies.Rmd",
+    "properties" : {
+    },
+    "relative_order" : 8,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}

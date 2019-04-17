@@ -1,0 +1,21 @@
+{
+    "collab_server" : "",
+    "contents" : "## Do the phantomjs stuff first:\nsystem(\"./phantomjs/bin/phantomjs.exe scrape.js\")\n## Requires editing scrape.js first\n\n\ntmp <- readLines(\"cargurus.html\")\ngrep(\"cg-dealFinder-result-model\", tmp)\ntmp[1119]\n\n\n\nlibrary('RSelenium')\ncheckForServer() # search for and download Selenium Server java binary.  Only need to run once.\nstartServer() # run Selenium Server binary\nremDr <- remoteDriver(browserName=\"firefox\", port=4444) # instantiate remote driver to connect to Selenium Server\nremDr$open(silent=T) # open web browser\n\n\n\n\n  2016 Toyota Sienna XLE 8-Passenger\n\n  \n  ",
+    "created" : 1480008595750.000,
+    "dirty" : true,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "4091302251",
+    "id" : "5F180F00",
+    "lastKnownWriteTime" : 1480008604,
+    "last_content_update" : 1480042990772,
+    "path" : "C:/Users/Administrator/Desktop/cargurus.R",
+    "project_path" : null,
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 11,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

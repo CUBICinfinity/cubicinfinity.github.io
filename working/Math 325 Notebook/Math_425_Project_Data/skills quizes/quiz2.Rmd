@@ -1,0 +1,102 @@
+---
+title: "quiz2"
+author: "Jim Greene"
+date: "January 17, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(car)
+
+View(Orange)
+?Orange
+orange_lm <- lm(circumference ~ age, data = Orange)
+summary(orange_lm)
+```
+
+$$
+  \underbrace{\hat{Y}_i}_\text{Circumference} = 17.40 + 0.107\underbrace{X_i}_\text{Age} + \epsilon_i \quad \text{where} \ \epsilon_i \sim N(0,\sigma^2)
+$$
+
+
+```{r}
+plot(circumference ~ age, data = Orange, col = "orangered1", pch = 16, main = "Growth of Orange Trees\n(Orange dataset)")
+abline(coef(orange_lm)[1], coef(orange_lm)[2])
+```
+
+```{r}
+# SSE Sum of Squared Errors
+# Measures how much the residuals deviate from the line.
+(SSE = sum(orange_lm$res^2))
+
+# SSE/n-2 = MSE and sqrt(MSE) = residuals standard error
+
+# SSR Sum of Squares Regression
+# Measures how much the regression line deviates from the average y-value.
+(SSR = sum((orange_lm$fit - mean(Orange$circumference))^2))
+
+print(SSR, digits = 9)
+
+# SSTO Total Sum of Squares
+# Measures how much the y-values deviate from the average y-value.
+(SSTO = sum((Orange$circumference - mean(Orange$circumference))^2))
+
+# R^2
+SSR / SSTO
+
+# r
+sqrt(SSR / SSTO)
+```
+
+```{r}
+predict.lm(orange_lm, data.frame(age = 365*3))[[1]]
+```
+
+```{r}
+View(mtcars)
+?mtcars
+```
+
+```{r}
+wt_lm <- lm(mpg ~ wt, data = mtcars)
+plot(mpg ~ wt, data = mtcars)
+abline(coef(wt_lm)[1], coef(wt_lm)[2])
+
+cyl_lm <- lm(mpg ~ cyl, data = mtcars)
+plot(mpg ~ cyl, data = mtcars)
+abline(coef(cyl_lm)[1], coef(cyl_lm)[2])
+
+hp_lm <- lm(mpg ~ hp, data = mtcars)
+plot(mpg ~ hp, data = mtcars)
+abline(coef(hp_lm)[1], coef(hp_lm)[2])
+
+(mtcars_wt_SSE <- sum(wt_lm$residuals^2))
+(mtcars_wt_SSR <- sum((wt_lm$fit - mean(mtcars$mpg))^2))
+(mtcars_SSTO <- sum((mtcars$mpg - mean(mtcars$mpg))^2))
+(Rsquare_wt <- mtcars_wt_SSR / mtcars_SSTO)
+
+(mtcars_cyl_SSE <- sum(cyl_lm$residuals^2))
+(mtcars_cyl_SSR <- sum((cyl_lm$fit - mean(mtcars$mpg))^2))
+(Rsquare_cyl <- mtcars_cyl_SSR / mtcars_SSTO)
+
+(mtcars_hp_SSE <- sum(hp_lm$residuals^2))
+(mtcars_hp_SSR <- sum((hp_lm$fit - mean(mtcars$mpg))^2))
+(Rsquare_hp <- mtcars_hp_SSR / mtcars_SSTO)
+```
+
+```{r}
+plot(cyl_lm, which = 1)
+qqPlot(cyl_lm$residuals)
+plot(cyl_lm$residuals ~ seq_len(length(cyl_lm$residuals)))
+summary(cyl_lm)
+
+plot(wt_lm, which = 1)
+qqPlot(wt_lm$residuals)
+plot(wt_lm$residuals ~ seq_len(length(wt_lm$residuals)))
+summary(wt_lm)
+
+plot(hp_lm, which = 1)
+qqPlot(hp_lm$residuals)
+plot(hp_lm$residuals ~ seq_len(length(hp_lm$residuals)))
+summary(hp_lm)
+```

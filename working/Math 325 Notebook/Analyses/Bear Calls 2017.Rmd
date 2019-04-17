@@ -1,0 +1,134 @@
+---
+title: "Florida Wildlife Conservation Bear Calls"
+author: "Jim Greene"
+date: "April 13, 2018"
+output: 
+  html_document:
+    theme: simplex
+    code_folding: hide
+---
+
+```{r, include=F}
+library(car)
+library(mosaic)
+library(ResourceSelection)
+library(pander)
+library(DT)
+library(ggplot2)
+library(plyr)
+library(lubridate)
+library(readr)
+b17 <- read_csv("../data/bear/2017 complete.csv")
+#b17r <- read_csv("../data/bear/2017 reduced.csv")
+b17r <- b17
+```
+
+```{r}
+b17$Date <- strptime(b17$Date, '%m/%d/%Y', tz = "EST")
+b17r$Date <- strptime(b17r$Date, '%m/%d/%Y', tz = "EST")
+b17$Report <- strptime(b17$Report, '%m/%d/%Y', tz = "EST")
+b17r$Report <- strptime(b17r$Report, '%m/%d/%Y', tz = "EST")
+
+b17r$Month <- month(as.POSIXlt(b17r$Date, format="%Y/%m/%d"))
+b17r$Month.abb <- month.abb[month(as.POSIXlt(b17r$Date, format="%Y/%m/%d"))]
+
+```
+
+```{r}
+b17r$Nature <- mapvalues(b17r$Nature, c("Animal Attacked Bear"), c("Conflict With Animal"))
+b17r$Nature <- mapvalues(b17r$Nature, c("Animal Killed Bear"), c("Conflict With Animal"))
+b17r$Nature <- mapvalues(b17r$Nature, c("Animal Threatened Bear"), c("Conflict With Animal"))
+b17r$Nature <- mapvalues(b17r$Nature, c("Attacked Animal"), c("Conflict With Animal"))
+b17r$Nature <- mapvalues(b17r$Nature, c("Threatened Animal"), c("Conflict With Animal"))
+b17r$Nature <- mapvalues(b17r$Nature, c("Attacked Human"), c("Conflict With Human"))
+b17r$Nature <- mapvalues(b17r$Nature, c("Human Threatened Bear"), c("Conflict With Human"))
+b17r$Nature <- mapvalues(b17r$Nature, c("Threatened Human"), c("Conflict With Human"))
+b17r$Nature <- mapvalues(b17r$Nature, c("Killed Animal"), c("Conflict With Animal"))
+b17r$Nature <- mapvalues(b17r$Nature, c("In Building"), c("Into Property"))
+b17r$Nature <- mapvalues(b17r$Nature, c("In Building/Tent/Vehicle"), c("Into Property"))
+b17r$Nature <- mapvalues(b17r$Nature, c("In Open Garage"), c("Into Property"))
+b17r$Nature <- mapvalues(b17r$Nature, c("In Screened Porch/Patio"), c("Into Property"))
+b17r$Nature <- mapvalues(b17r$Nature, c("In Unscreened Porch/Patio"), c("Into Property"))
+b17r$Nature <- mapvalues(b17r$Nature, c("Apiary"), c("Looking For Food"))
+b17r$Nature <- mapvalues(b17r$Nature, c("In Crops"), c("Looking For Food"))
+b17r$Nature <- mapvalues(b17r$Nature, c("In Feed"), c("Looking For Food"))
+b17r$Nature <- mapvalues(b17r$Nature, c("In Feeder"), c("Looking For Food"))
+b17r$Nature <- mapvalues(b17r$Nature, c("In Garbage"), c("Looking For Food"))
+b17r$Nature <- mapvalues(b17r$Nature, c("In Area"), c("General Sighting"))
+b17r$Nature <- mapvalues(b17r$Nature, c("In Yard"), c("General Sighting"))
+b17r$Nature <- mapvalues(b17r$Nature, c("In Hog Trap"), c("General Sighting"))
+b17r$Nature <- mapvalues(b17r$Nature, c("In Tree"), c("General Sighting"))
+b17r$Nature <- mapvalues(b17r$Nature, c("OTHER"), c("General Sighting"))
+b17r$Nature <- mapvalues(b17r$Nature, c("Misidentified"), c("Question/Misidentified"))
+b17r$Nature <- mapvalues(b17r$Nature, c("General Question"), c("Question/Misidentified"))
+```
+
+```{r, eval=T}
+table(b17r$Nature, b17r$Month.abb)
+```
+
+
+
+```{r, eval=F}
+#For 2017, this is census data.
+naturemonth <- chisq.test(b17r$Nature, month(as.POSIXlt(b17r$Date, format="%Y/%m/%d")))
+naturemonth$expected
+mean(naturemonth$expected)
+naturemonth
+```
+
+
+```{r, eval=F}
+table(b17$Nature, b17$County)
+table(b17$Nature, b17$Region)
+table(b17$Nature, month(as.POSIXlt(b17$Date, format="%Y/%m/%d")))
+```
+
+```{r, eval=F}
+table(b17$Nature, month.abb[month(as.POSIXlt(b17$Date, format="%Y/%m/%d"))], b17$County)
+```
+
+```{r, eval=F}
+table(b17r$Nature)
+table(b17r$Nature, month(as.POSIXlt(b17r$Date, format="%Y/%m/%d")), b17r$Region)
+```
+
+```{r, eval=F}
+b17fl <- subset(b17, Region != "Outside of Florida")
+
+b17Xcomo <- chisq.test(table(b17fl$County, month(as.POSIXlt(b17fl$Date, format="%Y/%m/%d"))))
+
+b17Xcomo$expected
+```
+
+```{r, eval = F}
+b17Xremo <- chisq.test(table(b17fl$Region, month(as.POSIXlt(b17fl$Date, format="%Y/%m/%d"))))
+
+b17Xremo$expected
+barplot(b17Xremo$residuals, beside=T, legend=T)
+```
+
+
+```{r, eval=F}
+b17X.NatCou <- chisq.test(table(b17$Nature, b17$County))
+b17X.NatReg <- chisq.test(table(b17$Nature, b17$Region))
+
+b17namo <- chisq.test(table(b17$Nature, month(as.POSIXlt(b17$Date, format="%Y/%m/%d"))))
+
+observedTestStat <- b17namo$statistic
+
+# Now we run the permutation for a distribution of test statistics
+N <- 50000
+permutedTestStats <- rep(NA, N)
+for (i in 1:N){
+  permutedData <- sample(sleep$group)
+  permutedTest <- t.test(extra ~ permutedData, data = sleep, mu = 0)
+  permutedTestStats[i] <- permutedTest$statistic
+}
+```
+
+
+
+```{r, eval=T}
+barplot(table(b17r$Nature, b17r$Month), beside=T, col=c("red", "purple", "green", "yellow", "blue", "pink", "orange", "cyan", "brown", "gray", "magenta"), horiz=F, legend=T, args.legend=list(x="topleft", bty='n', title="Nature of Call"), xlab="Month", main="2017 Bear Calls to FWC")
+```

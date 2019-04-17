@@ -1,0 +1,21 @@
+{
+    "collab_server" : "",
+    "contents" : "apply(<table>, c(<1>, ..., <P>), sum)  # Create summaries\n\napply(<table>, c(<1>, ..., <P>), sum)/sum(<table>)  # Show it as a proportion\n\n\nglasses <- cbind( Males = c(Glasses = 5, Contacts = 12, None = 18), Females = c(Glasses = 4, Contacts = 14, None = 22))\n\nglasses # view it\n\nbarplot(glasses, beside=TRUE, legend.text=TRUE, args.legend=list(x=\"topleft\",bty=\"n\"))\n\nchis.glasses <- chisq.test(glasses)\n\nchis.glasses$expected  # check requirement\n\nchis.glasses # view details\n\nchis.glasses$residuals  # note the no values are large in magnitude\n\n###\neducation <- cbind( `United States` = c(Engineering = 61941, `Natural Science` = 111158, `Social Science` = 182166), `Western Europe` = c(Engineering = 158931, `Natural Science` = 140126, `Social Science` = 116353), Asia = c(280772, 242879, 236018))\n\neducation  # view\n\nbarplot(education, beside=T, legend.text=T, args.legen=list(x=\"topleft\", bty=\"n\"), main = \"College Degrees Awarded by Region\")\n\n#test taking note: watch the wording, 5 or more \"expected,\" not \"observed\"",
+    "created" : 1523161433493.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1630239410",
+    "id" : "3EDD42CD",
+    "lastKnownWriteTime" : 1522395088,
+    "last_content_update" : 1522395088,
+    "path" : "C:/Users/Jim/Desktop/MATH 325/Math 325 Notebook/chi sq codes.R",
+    "project_path" : "chi sq codes.R",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 5,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

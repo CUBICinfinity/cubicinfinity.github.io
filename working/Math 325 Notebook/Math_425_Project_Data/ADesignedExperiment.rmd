@@ -1,0 +1,204 @@
+---
+title: "Relationship between the Distance of Clusters and the F1-Score in K-Nearest Neighbors"
+author: "Jim Greene"
+date: "February 18, 2019"
+output:
+  html_document:
+  #tufte::tufte_html: default
+    code_folding: "hide"
+    theme: "readable"
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(car)
+library(DT)
+library(pander)
+```
+
+```{r, warning=FALSE, message=FALSE}
+f1_scores <- read_csv("./data/f1_scores.csv") %>% 
+  # I have created non-tidy data! Let's fix it.
+  select(-c("X1")) %>% 
+  gather('0.25', '0.50', '1.00', '2.00', key = "distance", value = "score")
+f1_scores$distance <- as.numeric(f1_scores$distance)
+
+f1_scores_2 <- f1_scores %>% 
+  filter(score < 1) %>% 
+  mutate(log_odds = log(score / (1 - score)))
+
+scores_lm <- lm(score ~ distance, data = f1_scores)
+log_odds_lm <- lm(log_odds ~ distance, data = f1_scores_2)
+
+ggplot(f1_scores_2, aes(x = distance, y = score)) +
+  geom_point(size = 2, shape = 1) +
+  stat_function(fun = function(x) 1/((1/exp(log_odds_lm$coef[1] + log_odds_lm$coef[2] * x)) + 1), size = 1, alpha = 0.5, color = "#2030b0") +
+  labs(x = "distance between similar clusters in standard deviations", y = "f1-score", title = "Relationship between the Relative Distance of Two Normally Distributed\nClusters and the F1-Score of K-Nearest Neighbors (with 4 Attributes)") +
+  theme_bw()
+```
+
+<div/><div/>
+The f1-scores can be predicted with this model:
+$$
+\underbrace{\hat{Y}_i}_\text{Average F1-Score} \quad \underbrace{X_i}_\text{Distance}
+\\ \quad
+\\
+\hat{Y}_i = [\frac{1}{e^{0.4002 + 1.4449 X_i}} + 1]^{-1}
+$$
+
+### Explanation
+
+I generated a cluster of 100 points in 4-space at the centroid (0,0,0,0) with a normal distribution and a standard deviation of 1 in all directions. I assigned all of these data points to the class ‘A’.
+
+I then created 4 similar clusters, each assigned to class ‘B’. These four clusters were centered at (0.25,0,0,0), (0.5,0,0,0), (1,0,0,0), and (2,0,0,0).
+
+I compiled these into four datasets, each with the ‘A’ cluster and one of the ‘B’ clusters.
+
+I then ran a k-nearest neighbors classification 40 times on each of the four datasets with k = 9, recording the macro f1-scores.
+
+### Details
+
+I first created this simple regression, which is not good because the f1-score is a percentage rather than a continouously increasing value:
+```{r}
+ggplot(f1_scores, aes(x = distance, y = score)) +
+  geom_point(shape = 1, size = 2) +
+  geom_abline(slope = scores_lm$coefficients[2], intercept = scores_lm$coefficients[1], size = 1, alpha = 0.5, color = "#2030b0") +
+  labs(x = "distance between similar clusters in standard deviations", y = "f1-score", title = "Relationship between the Relative Distance of Two Normally Distributed\nClusters and the F1-Score of K-Nearest Neighbors (with 4 Attributes)") +
+  theme_bw()
+```
+
+<br/>
+I decided to convert the percentages into the log-odds to resolve this. In the process a few values of 100% needed to be dropped because they cause the transformation to divide by zero.
+
+$$
+\text{odds} = \frac{\text{percentage}}{1-\text{percentage}}
+$$$$
+\text{log-odds} = \text{log}(\text{odds})
+$$
+
+These are the diagnostic plots from after the transformation:
+```{r, fig.width = 8, message = FALSE}
+par(mfrow = c(1,2))
+plot(log_odds_lm, which = 1)
+qqPlot(log_odds_lm$residuals, main = "QQ-Plot", ylab = "Residuals")
+```
+
+The errors are mostly normal, but it's possible that this experiment tends to have more extreme outliers.
+
+```{r}
+pander(summary(log_odds_lm))
+```
+
+
+### Data (Perfect scores included)
+
+```{r}
+datatable(f1_scores, options = list(lengthMenu = c(10,40,160)))
+```
+
+Click the "Code" button to see the Python script that generated the data.
+```{python, eval=FALSE}
+# This is the Python code I used to generate the data.
+
+import random as rand
+import numpy as np
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import f1_score
+
+
+rand.seed()
+
+
+def get_knn_f1(attributes, targets, test_size, k, seed = None):
+    attributes = attributes.astype(np.float64)
+    train_data, test_data, train_target, test_target = train_test_split(
+            attributes, targets, test_size = test_size, random_state = seed)
+    
+    classifier = KNeighborsClassifier(n_neighbors = k)
+    classifier.fit(train_data, train_target)
+    predictions = classifier.predict(test_data)
+    
+    return (f1_score(test_target, predictions, average = 'macro'))
+
+
+def generate_cluster(n, target, w_shift = 0):
+    data = -1
+    
+    for i in range(n):
+        # This article to helped me generate random directions: 
+        # http://mathworld.wolfram.com/HyperspherePointPicking.html
+        x1 = 2
+        x2 = 0
+        x3 = 2
+        x4 = 0
+        
+        while x1**2 + x2**2 >= 1:
+            x1 = rand.uniform(-1, 1)
+            x2 = rand.uniform(-1, 1)
+            
+        while x3**2 + x4**2 >= 1:
+            x3 = rand.uniform(-1, 1)
+            x4 = rand.uniform(-1, 1)
+       
+        radius = rand.normalvariate(0, 1)
+    
+        w = x1 * radius + w_shift
+        x = x2 * radius
+        y = x3 * np.sqrt((1 - x1**2 - x2**2)/(x3**2 + x4**2)) * radius
+        z = x4 * np.sqrt((1 - x1**2 - x2**2)/(x3**2 + x4**2)) * radius
+      
+        if type(data) == np.ndarray:
+            data = np.append(data, [[w, x, y, z, target]], axis = 0)
+        else:
+            data = np.array([[w, x, y, z, target]])
+        
+    return(data)
+
+
+K = 9
+SAMPLE_SIZE = 40
+CLUSTER_SIZE = 100
+
+
+f1_scores_025 = []
+for i in range(SAMPLE_SIZE):
+    data_025 = np.append(generate_cluster(CLUSTER_SIZE, 'A'), generate_cluster(
+            CLUSTER_SIZE, 'B', 0.25))
+    data_025 = np.reshape(data_025, (-1,5))
+    f1_scores_025.append(get_knn_f1(
+            data_025[...,:4], data_025[...,4], 0.25, K))
+
+
+f1_scores_050 = []
+for i in range(SAMPLE_SIZE):
+    data_050 = np.append(generate_cluster(CLUSTER_SIZE, 'A'), generate_cluster(
+            CLUSTER_SIZE, 'B', 0.5))
+    data_050 = np.reshape(data_050, (-1,5))
+    f1_scores_050.append(get_knn_f1(
+            data_050[...,:4], data_050[...,4], 0.25, K))
+
+
+f1_scores_100 = []
+for i in range(SAMPLE_SIZE):
+    data_100 = np.append(generate_cluster(CLUSTER_SIZE, 'A'), generate_cluster(
+            CLUSTER_SIZE, 'B', 1))
+    data_100 = np.reshape(data_100, (-1,5))
+    f1_scores_100.append(get_knn_f1(
+            data_100[...,:4], data_100[...,4], 0.25, K))
+
+
+f1_scores_200 = []
+for i in range(SAMPLE_SIZE):
+    data_200 = np.append(generate_cluster(CLUSTER_SIZE, 'A'), generate_cluster(
+            CLUSTER_SIZE, 'B', 2))
+    data_200 = np.reshape(data_200, (-1,5))
+    f1_scores_200.append(get_knn_f1(
+            data_200[...,:4], data_200[...,4], 0.25, K))
+
+
+pd.DataFrame({'0.25' : f1_scores_025, '0.50' : f1_scores_050, 
+              '1.00' : f1_scores_100, '2.00' : f1_scores_200}).to_csv(
+    "f1_scores.csv")
+```

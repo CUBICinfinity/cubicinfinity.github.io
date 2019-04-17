@@ -1,0 +1,166 @@
+---
+title: "IMDb Movie Ratings (Jan 1986 - Nov 2017)"
+output: 
+  html_document:
+    theme: yeti
+    code_folding: hide
+    toc: false
+    toc_float: false
+---
+<script type="text/javascript">
+ function showhide(id) {
+    var e = document.getElementById(id);
+    e.style.display = (e.style.display == 'block') ? 'none' : 'block';
+ }
+</script>
+
+```{r, include=FALSE}
+library(mosaic)
+library(DT) 
+library(car)
+library(pander) #You'll love this one! 
+# To use it Run this in your Console: install.packages("pander")
+
+movies <- read.csv("../Data/movies.csv", header=TRUE)
+movies2 <- read.csv("../Data/movies2.csv", header=TRUE)
+# To get the movies and movies2 data into your Console, Run:
+# "Session -> Set Working Directory -> To Source File Location"
+# and then, "Play" this R-Chunk with the little green play button.
+```
+
+
+<br />
+
+# Question
+
+Throughout the world, thousands of movies are produced every year.<sup>[1](#References)</sup> As a producer it is imporant to consider what types of movies are prone to produce a higher revenue. <br />
+Observed in this analysis are box office films from January 1986 to Novebmer 2017. It is not a complete census, but a large sample, with 6,820 entries.<sup>[2](#References)</sup>
+
+# Analysis
+
+There are several variables we could look at. We'll observe the budget, the film length, and the genre.
+
+<!-- Instructions: Come up with an interesting question and answer it with the "movies" dataset that is provided above. 
+
+Write a Background that gives meaning to your question of interest.
+
+State your Question.
+
+Perform an appropriate "Analysis" that gives useful information for answering your question. The hope would be a really powerful graphic and some summary tables of supporting statistics.
+
+Interpret your analysis and expound on your findings. -->
+
+### Budget
+
+It seems likely that a movie with a high budget would also be "good." But this is the actual distribution of budgets and ratings:<br />
+Movies received good ratings from all budget levels, however, the megaphone shape in this scatter plot shows that as the budget increases the chances of producing a terrible movie tend to become much smaller.
+```{r, echo=T}
+options(scipen=3)
+plot(score ~ budget, data=movies2, xlab="Budget", ylab="IMDb Score", pch=20)
+```
+<br />The movie with the largest budget in this dataset was *Pirates of the Caribbean: At World's End* (2007) at  \$300,000,000 with a rating of 7.1, while *The Dark Knight* (2008) was budgeted at \$185,000,000 and earned a rating of 9.0. The highest rated movie in the set was *The Shawshank Redemption* (1994) at 9.3. It's budget was only $25,000,000.
+
+### Movie Length
+
+This was an interesting variable to look at. The average movie is 106.5 minutes. This trend is somewhat similar to the budget-score trend and generally speaking, the longer films seem to generate respect. This influence is a bit stonger than budget.
+```{r, echo=T}
+plot(movies2$runtime, movies2$score, xlab="Movie Length (Minutes)", ylab="IMDb Score", pch=20)
+```
+<br />These are the longest movies in the set:
+```{r, echo=T}
+longer <- subset(movies2, runtime >= 200)
+datatable(longer, options=list(lengthMenu = c(3,11)))
+```
+As would be expected, the foreign companies have a tendency to be more adventurous.<br />
+The fact that the last two plots have a similar shape suggests that there might be a correlation between budget and runtime. Indeed there is, but it isn't strong nor is it linear. Infact, while there is an overall positive linear correlation of 0.268, the very longest films actually have the smallest bugdets.
+
+### Genre
+
+The final variable we wanted to consider was the genre.
+<div style="padding-left:15px;">
+##### <a href="javascript:showhide('2')">Click for details</a>
+<div id="2" style="display:none;">
+```{r, echo=T, warning=FALSE}
+pander(favstats(score ~ genre, data=movies2))
+```
+</div>
+</div>
+```{r, echo=T}
+par(cex.axis=0.4)
+smaller <- subset(movies2, genre!="War" & genre!="Western" & genre!="Musical")
+smaller$genre <- droplevels(smaller$genre)
+boxplot(score ~ genre, data=smaller, xlab="Genre", ylab="IMDb Score")
+par(cex.axis=1.0)
+```
+<font size="1"><br />
+To save space, "Musical", "War", and "Western" were excluded from this plot as they each had less than 5 occurances; but they closely resemble the other genres with respect to IMDb score.
+<br />
+</font>
+<br />
+An appropriate null hypothesis for the genres is that the mean IMDb scores are all equal. So the alternative hypothesis is that at least one genre has a different mean score:
+$$
+  H_0: α1=α2=…=0
+$$
+$$
+  H_a: αi≠0 \text{ for at least one i}
+$$
+We'll use a one-way ANOVA to see if it is statistically significant (Choosing 0.95 for the confidence level). "Sci-Fi" is not normally distributed, so I removed it from the analysis:
+```{r, warning=FALSE}
+movies2.aov <- aov(score ~ genre, data=subset(movies2, genre!="Sci-Fi"))
+pander(summary(movies2.aov))
+```
+
+
+We can reject the null hypothesis.<br />
+
+<div style="padding-left:15px;">
+##### <a href="javascript:showhide('name')">Details on the requirements</a>
+<div id="name" style="display:none;">
+The genre with the highest variance in score is Adventure (`r var(subset(movies2, genre=="Adventure")$score)`) and the genre with the lowest is Biography (`r var(subset(movies2, genre=="Biography")$score)`). We will not run into any problems with the variances being too far apart.
+
+This table shows the sample size from each genre:
+```{r, echo=T, warning=FALSE}
+pander(table(movies2$genre))
+```
+For the genres with at least 30 samples, I assumed the central limit theorem.
+I tested the genres with less samples for normality individually:<br />
+```{r, echo=T, warning=FALSE}
+qqPlot(subset(movies2, genre=="Family")$score, ylab="IMDb Score", main="Q-Q Plot for \"Family\"", col.lines="red", pch=16, col="red")
+
+qqPlot(subset(movies2, genre=="Musical")$score, ylab="IMDb Score", main="Q-Q Plot for \"Musical\"", col.lines="blue", pch=16, col="blue")
+
+qqPlot(subset(movies2, genre=="Romance")$score, ylab="IMDb Score", main="Q-Q Plot for \"Romance\"", col.lines="green", pch=16, col="green")
+
+qqPlot(subset(movies2, genre=="Sci-Fi")$score, ylab="IMDb Score", main="Q-Q Plot for \"Sci-Fi\"", col.lines="magenta", pch=16, col="magenta")
+
+qqPlot(subset(movies2, genre=="Thriller")$score, ylab="IMDb Score", main="Q-Q Plot for \"Thriller\"", col.lines="cyan", pch=16, col="cyan")
+
+qqPlot(subset(movies2, genre=="War")$score, ylab="IMDb Score", main="Q-Q Plot for \"War\"", col.lines="gold", pch=16, col="gold")
+
+qqPlot(subset(movies2, genre=="Western")$score, ylab="IMDb Score", main="Q-Q Plot for \"Western\"", col.lines="brown", pch=16, col="brown")
+```
+<br />"Sci-Fi" is not normally distributed and I removed it from the ANOVA. "Family" is close to being normally distributed so I chose to keep it.
+
+This is the result of the one-way ANOVA without removing the "Sci-Fi" genre:
+```{r, warning=FALSE}
+movies2.aov2 <- aov(score ~ genre, data=movies2)
+pander(summary(movies2.aov2))
+```
+</div>
+</div>
+
+"Family" is the lowest scoring genre. For the sake of curiosity, the highest rated family movies in this dataset are *Little Nemo: Adventures in Slumberland* (1989) from Japan and *Nutcracker* (1986) from the USA, both rated 7.2.<br />
+
+
+# Interpretation
+
+If one decided to make the movie 140 minutes or longer, and used a high enough budget to produce something of quality, they would likely make a well accepted movie.<br />
+The genre was not terribly influential in previous films. One might consider producing a biographical film, but it is uncertain how well a biography would combine with an extended length.<br />
+There are however, many other factors that are likely to influence the score; including the writer, director, acting, music, art, and cult followings. To make one of the best movies, such factors of quality will need to be implemented.
+
+<br />
+
+#### References {#References}
+1. https://stephenfollows.com/how-many-films-are-made-around-the-world/
+
+2. This analysis was created using the movies2 data provided by Brother Saunders. The dataset was too large to be reasonably displayed in this document.

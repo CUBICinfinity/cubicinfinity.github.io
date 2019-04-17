@@ -1,0 +1,172 @@
+---
+title: "Chocolate"
+output: 
+  html_document:
+    theme: cosmo
+    highlight: espresso
+    code_folding: hide
+---
+
+```{r, include=FALSE}
+# Be sure to use your file menus at the top of R-Studio to:
+# "Session -> Set working directory -> To source file location"
+# Then play this chunk and the next one to get the data into R.
+library(mosaic)
+library(car)
+library(DT)
+library(pander)
+library(readr)
+library(plyr)
+#library(rmdformats)
+choc <- read_csv("C:/Users/Jim/Desktop/MATH 325/Math 325 Notebook/Data/Chocolate2.csv")
+Chocolate <- read_csv("C:/Users/Jim/Desktop/MATH 325/Math 325 Notebook/Data/Chocolate.csv")
+choc$Rating_ <- as.factor(choc$Rating)
+choc$Review_ <- as.factor(choc$Review)
+choc$Location_ <- as.factor(choc$Location)
+choc$score <- cut(choc$Rating, c(0,2,3,4,5), c("1.00-1.75", "2.00-2.75", "3.00-3.75", "4.00-5.00" ))
+choc$date <- cut(choc$Review, c(2006,2008,2010,2012,2014,2016,2018), c("2006-07", "2008-09", "2010-11", "2012-13", "2014-15", "2016-17"))
+chocUSA <- subset(choc, Location_=="U.S.A.")
+```
+
+<!--choc$date <- cut(choc$Review, c(2006,2008,2010,2012,2014,2016,2018), c("2006, 2007", "2008, 2009", "2010, 2011", "2012, 2013", "2014, 2015", "2016, 2017"))-->
+
+<!-- Instructions:
+
+ Use the Chocolate dataset and a Kruskal-Wallis Test(s) to answer an interesting question(s) that you come up with.
+ 
+ About the dataset:
+ 
+  * Company: Name of the company manufacturing the bar.
+
+  * Orig: The specific geo-region of origin for the bar.
+
+  * Review: Date of publication of the review.
+
+  * Cocoa: Cocoa percentage (darkness) of the chocolate bar being reviewed.
+
+  * Location: Manufacturer base country.
+
+  * Rating: Expert rating for the bar.
+      5= Elite (Transcending beyond the ordinary limits)
+      4= Premium (Superior flavor development, character and style)
+      3= Satisfactory(3.0) to praiseworthy(3.75) (well made with special qualities)
+      2= Disappointing (Passable but contains at least one significant flaw)
+      1= Unpleasant (mostly unpalatable)
+
+   * Type: The variety (breed) of cocoa bean used, if provided.
+   
+   * BroadOrig: The broad geo-region of origin for the bean.
+
+Note this dataset and description come from: © 2018 Kaggle Inc for further details visit:
+
+[Kaggle.com](https://www.kaggle.com/rtatman/chocolate-bar-ratings/data)
+<!--
+----
+**Comments to Critiquers:** 
+
+For some reason a datatable didn't work with this set.
+Feel free to share any r code of any kind that you find useful.-->
+
+<!--End your comments to your critiquers before this line.-->
+
+----
+
+<!--Begin writing your Analysis after this point.-->
+
+## Background
+
+I have a dataset of ratings of chocolate from around the world from 2006 to 2017.
+<script type="text/javascript">
+ function showhide(id) {
+    var e = document.getElementById(id);
+    e.style.display = (e.style.display == 'block') ? 'none' : 'block';
+ }
+</script>
+
+<a href="javascript:showhide('details')">
+<div class="hoverchunk">
+<span class="tooltipr">
+Show details on Chocolate.csv
+</span><span class="tooltipr" style="float:right;">
+</span>
+</div>
+</a>
+<div id="details" style="display:none;padding-left:20px;">
+ About the dataset:
+ 
+  * Company: Name of the company manufacturing the bar.
+
+  * Orig: The specific geo-region of origin for the bar.
+
+  * Review: Date of publication of the review.
+
+  * Cocoa: Cocoa percentage (darkness) of the chocolate bar being reviewed.
+
+  * Location: Manufacturer base country.
+
+  * Rating: Expert rating for the bar.<br/ >
+      5= Elite (Transcending beyond the ordinary limits)<br/ >
+      4= Premium (Superior flavor development, character and style)<br/ >
+      3= Satisfactory(3.0) to praiseworthy(3.75) (well made with special qualities)<br/ >
+      2= Disappointing (Passable but contains at least one significant flaw)<br/ >
+      1= Unpleasant (mostly unpalatable)
+
+   * Type: The variety (breed) of cocoa bean used, if provided.
+   
+   * BroadOrig: The broad geo-region of origin for the bean.
+
+Note this dataset and description come from: © 2018 Kaggle Inc for further details visit [Kaggle.com](https://www.kaggle.com/rtatman/chocolate-bar-ratings/data).
+
+
+<a href="javascript:showhide('table')">
+<div class="hoverchunk">
+<span class="tooltipr">
+View data
+</span><span class="tooltipr" style="float:right;">
+</span>
+</div>
+</a>
+<div id="table" style="display:none;">
+Click the "Code" button.
+
+```{r, echo=T, eval=T}
+datatable(subset(Chocolate, select=-c(BroadOrig)), options=list(lengthMenu=c(10,50,150,500,1000,2000)))
+```
+</div>
+
+</div>
+I want to know if the chocolate critics are consistent in their ratings.
+
+## Analysis
+This is what I observe when comparing the ratings by time:
+```{r, echo=T}
+boxplot(Rating ~ date, data=choc, col="Chocolate3", ylab="Rating")
+```
+
+```{r, echo = F, eval=F}
+xyplot(Rating ~ Review_, data=choc, type=c("p","a"), auto.key=list(corner=c(1,1)), pch=15, col="Chocolate", xlab="Year of Review")
+```
+The significance as determined by a Kruskal-Wallis test are included:
+<font size="2">
+
+$$
+  H_0: \text{All review years are from the same distribution.}
+$$ 
+$$
+  H_a: \text{At least one year's distribution is stochastically different.}
+$$
+</font>
+`r pander(kruskal.test(Rating ~ Review_, data=choc))`
+A statistical summary for the ratings of each year:
+```{r echo=T}
+pander(favstats(choc$Rating ~ choc$Review_))
+```
+
+
+<!--
+xyplot(Rating ~ Cocao, data=choc, groups=date, type=c("p","a"), auto.key=list(corner=c(1,1)))
+xyplot(Rating ~ Location_, data=choc, groups=date, type=c("p","a"), auto.key=list(corner=c(1,1)))
+-->
+## Interpretation
+
+Although the average ratings seem to be about the same from one year to the next, the variation has gotten smaller and the typical median rating has been increasing. I still need to know why this has happened. It is very possible that the way the chocolate is judged has changed over time, perhaps becoming more refined. It could also be that the chocolate types and origins reviewed were not consistent for each year, which is something that could be investigated in a later analysis.

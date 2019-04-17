@@ -1,0 +1,147 @@
+---
+title: "Day Care Fines"
+output: 
+  html_document:
+    theme: cerulean
+    code_folding: hide
+---
+
+<script type="text/javascript">
+ function showhide(id) {
+    var e = document.getElementById(id);
+    e.style.display = (e.style.display == 'block') ? 'none' : 'block';
+ }
+</script>
+
+```{r, include=FALSE}
+library(mosaic)
+library(DT)
+```
+
+
+## Background
+
+<a href="javascript:showhide('abstract')">Details of the Day Care Study<span style="font-size:8pt;">&nbsp;(click to view)</span></a>
+
+<div id="abstract" style="display:none;">
+
+<div style="color:#a8a8a8;">
+This background is quoted directly from the article ["A Fine is a Price"](http://rady.ucsd.edu/faculty/directory/gneezy/pub/docs/fine.pdf). 
+</div>
+
+<div style="padding-left:30px; padding-right:30px;">
+
+There are two types of day-care centers in Israel: private and public. A study was conducted in 10 private day-care centers in the city of Haifa from January to June 1998. All of these centers are located in the same part of town, and there is no important difference among them. During the day children are organized into groups according to age, from 1 to 4 years old. Each day-care center is allowed to hold a maximum of 35 children. In some exceptional cases a few additional children are allowed. The fee for each child is NIS 1,400 per month. (The NIS is the New Israeli Shekel.) At the time of the study, a U.S. dollar was worth approximately NIS 3.68, so the fee was about $380 at that time. 
+
+The contract signed at the beginning of the year states that the day-care
+center operates between 0730 and 1600. There is no mention of what happens if parents come late to pick up their children. In particular, before the beginning of the study, there was no fine for coming late. When parents did not come on time, one of the teachers had to wait with the children concerned. Teachers would rotate in this task, which is considered part of the job of a teacher, a fact that is clearly explained when a teacher is hired. Parents rarely came after 1630. 
+
+A natural option [to fix the problem of parents showing up late] is to introduce a fine: every time a parent comes late, [they] will have to pay a fine. Will that reduce the number of parents who come late? If the fine is removed, will things revert back to the way they were originally?
+
+The overall period of the study was 20 weeks. In the first 4 weeks we
+simply recorded the number of parents who arrived late each week. At the
+beginning of the fifth week, we introduced a fine in six of the 10 day-care centers, which had been selected randomly. The announcement of the fine was made with a note posted on the bulletin board of the day-care center. Parents tend to look at this board every day, since important announcements are posted there. The announcement specified that the fine would be NIS 10 for a delay of 10 minutes or more. The fine was per child; thus, if parents had two children in the center and they came late, they had to pay NIS 20. Payment was made to the principal of the day-care center at the end of the month. Since monthly payments are made to the owner during the year, the fines were added to those amounts. The money was paid to the owner, rather then to the teacher who was staying late (and did not get any additional money). The teachers were informed of the fine but not of the study. Registering the names of parents who came late was a common practice in any case.
+
+At the beginning of the seventeenth week, the fine was removed with no explanation. Notice of the cancellation was posted on the board. If parents asked why the fines were removed, the principals were instructed to reply that the fine had been a trial for a limited time and that the results of this trial were now being evaluated.
+
+A comparison with other fines in Israel may give an idea of the size of
+the penalty that was introduced. A fine of NIS 10 is relatively small but not insignificant. In comparison, the fine for illegal parking is NIS 75; the fine for driving through a red light is NIS 1,000 plus penalties; the fine for not collecting the droppings of a dog is NIS 360. For many of these violations, however, detection and enforcement are low or, as in the case of dog dirt, nonexistent in practice. A baby-sitter earns between NIS 15 and NIS 20 per hour. The average gross salary per month in Israel at the time of the study was NIS 5,595.
+
+</div>
+
+</div>
+
+
+
+<a href="javascript:showhide('wide')">The Data: Wide Format <span style="font-size:8pt;">(click to view)</span></a>
+
+<div id="wide" style="display:none;">
+
+The `late` Day Care Center data is shown here in the "wide data format". 
+
+```{r, out.width=300}
+# To get the "late" dataset into your R Console, 
+# you need to click the green "play" arrow in 
+# the top right corner of this gray R-Chunk. 
+# Then type:
+#   > View(late)
+# in your R Console
+late <- rbind(c(1, 37, 8, 8, 7, 6, 8, 9, 9, 12, 13, 13, 
+                15, 13, 14, 16, 14, 15, 16, 13, 15, 17),
+              c(2, 35, 6, 7, 3, 5, 2, 11, 14, 9, 16, 12, 
+                10, 14, 14, 16, 12, 17, 14, 10, 14, 15),
+              c(3, 35, 8, 9, 8, 9, 3, 5, 15, 18, 16, 14, 
+                20, 18, 25, 22, 27, 19, 20, 23, 23, 22),
+              c(4, 34, 10, 3, 14, 9, 6, 24, 8, 22, 22, 19, 
+                25, 18, 23, 22, 24, 17, 15, 23, 25, 18),
+              c(5, 33, 13, 12, 9, 13, 15, 10, 27, 28, 35, 
+                10, 24, 32, 29, 29, 26, 31, 26, 35, 29, 28),
+              c(6, 28, 5, 8, 7, 5, 5, 9, 12, 14, 19, 17, 
+                14, 13, 10, 15, 14, 16, 6, 12, 17, 13),
+              c(7, 35, 7, 10, 12, 6, 4, 13, 7, 8, 
+                5, 12, 3, 5, 6, 13, 7, 4, 7, 10, 4, 6),
+              c(8, 34, 12, 9, 14, 18, 10, 11, 6, 
+                15, 14, 13, 7, 12, 9, 9, 17, 8, 5, 11, 8, 13),
+              c(9, 34, 3, 4, 9, 3, 3, 5, 9, 5, 2, 
+                7, 6, 6, 9, 4, 9, 2, 3, 8, 3, 5),
+              c(10, 32, 15, 13, 13, 12, 10, 9, 15, 15, 15, 
+                10, 17, 12, 13, 11, 14, 17, 12, 9, 15, 13))
+late <- data.frame(c(rep("Fine",6),rep("Control",4)), late)
+colnames(late) <- c("Treatment","Center","No.ofChidren",paste("Week",1:20, sep=""))
+knitr::kable(late)
+```
+
+</div>
+
+
+<a href="javascript:showhide('long')">The Data: Long Format <span style="font-size:8pt;">(click to view)</span></a>
+
+
+<div id="long" style="display:none;">
+
+The `Late` Day Care Center data is shown here in the "long data format".
+
+```{r}
+# This code reshapes the data into "long" format.
+# To get the "Late" dataset into your R Console, 
+# you need to click the green "play" arrow in 
+# the top right corner of this gray R-Chunk. 
+# Then type:
+#   > View(Late)
+# in your R Console
+Late <- reshape(late,
+                varying = paste("Week",1:20, sep=""), 
+                v.names = "No.ofLateChildren",
+                timevar = "Week", 
+                times = 1:20, 
+                idvar = "Center",
+                new.row.names = 1:200,
+                direction = "long")
+knitr::kable(Late)
+```
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Be sure to add your own brief background here before beginning the Analysis. -->
+
+
+
+
+
+
+
+## Analysis
+
+
+

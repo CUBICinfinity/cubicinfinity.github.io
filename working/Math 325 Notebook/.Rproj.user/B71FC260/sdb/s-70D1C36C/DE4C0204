@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "name: \"math-325-notebook\"\nnavbar:\n  title: \"Math 325 Notebook\"\n  left:\n    - text: \"Table of Contents\"\n      href: index.html\n    - text: \"Describing Data\"\n      menu:\n        - text: \"Graphical Summaries\"\n          href: GraphicalSummaries.html\n        - text: \"Numerical Summaries\"\n          href: NumericalSummaries.html\n    - text: \"R Help\"\n      menu:\n        - text: \"R Commands\"\n          href: RCommands.html\n        - text: \"R Markdown Hints\"\n          href: RMarkdownHints.html\n    - text: \"Analyses\"\n      menu:\n        - text: \"Analysis Rubric\"\n          href: ./Analyses/AnalysisRubric.html\n        - text: \"Good Example Analysis\"\n          href: ./Analyses/StudentHousing.html\n        - text: \"Poor Example Analysis\"\n          href: ./Analyses/StudentHousingPOOR.html\n        - text: \"My First Analysis\"\n          href: ./Analyses/StudentHousingII.html\n          \noutput_dir: '.'\n\n  ",
+    "created" : 1504903478963.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3841747433",
+    "id" : "DE4C0204",
+    "lastKnownWriteTime" : 1504906788,
+    "last_content_update" : 1504906788530,
+    "path" : "~/Documents/A17-Fall 2017/Math 325/Math 325 Notebook/_site.yml",
+    "project_path" : "_site.yml",
+    "properties" : {
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "yaml"
+}

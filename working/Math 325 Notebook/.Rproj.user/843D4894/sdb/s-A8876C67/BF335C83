@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "---\ntitle: \"Critique Rubric\"\noutput: \n  html_document:\n    theme: cerulean\n---\n\n<br />\n\n#### Quote by Joseph B. Worthlin \n\n\"The Lord’s way consists of helping people help themselves.\" <sup>[1](https://www.lds.org/ensign/2015/06/helping-others-in-the-lords-way?lang=eng)</sup>\n\n<br />\n\n\n### Rubric Categories\n\nCritiques will be graded on these elements.\n\n<div style=\"padding-left:15px;\">\n\n{ } Completion\n<div style=\"padding-left:30px; font-size:.8em; color:#a8a8a8;\">Was a critique submitted by the deadline?</div>\n\n{ } Effort\n<div style=\"padding-left:30px; font-size:.8em; color:#a8a8a8;\">Is it clear that thought and effort was made to provide a useful critique?</div>\n\n{ } Clarity\n<div style=\"padding-left:30px; font-size:.8em; color:#a8a8a8;\">Is the critique easily understood with clear direction for improvement provided?</div>\n\n{ } Tone\n<div style=\"padding-left:30px; font-size:.8em; color:#a8a8a8;\">Is the critique positive and supportive of improvement, or critical or rude?</div>\n\n{ } Useful\n<div style=\"padding-left:30px; font-size:.8em; color:#a8a8a8;\">Was at least one compliment and one improvement stated for each [Rubric](../AnalysisRubric.html) category?</div>\n     \n</div>\n\n<br />\n\n\n### Category Points\n\nEach Rubric Category is graded with a {**0**}, {**1**}, or {**2**}.\n\n</br>\n\n\nAnother student is depending on your critique, so meeting the deadline with a well completed critique is very important.\n\n",
+    "created" : 1473571046738.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1428613462",
+    "id" : "BF335C83",
+    "lastKnownWriteTime" : 1473571055,
+    "last_content_update" : 1473571055794,
+    "path" : "C:/Users/Administrator/Desktop/Math 325 Notebook/Analyses/Critiques/CritiqueRubric.Rmd",
+    "project_path" : "Analyses/Critiques/CritiqueRubric.Rmd",
+    "properties" : {
+    },
+    "relative_order" : 5,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}

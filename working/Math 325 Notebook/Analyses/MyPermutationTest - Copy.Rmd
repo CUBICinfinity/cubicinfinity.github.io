@@ -1,0 +1,66 @@
+---
+title: "World Happiness"
+author: "Jim Greene"
+date: "April 7, 2018"
+output: html_document
+---
+
+## Background
+This comes from https://www.kaggle.com/unsdsn/world-happiness
+
+```{r, include=F}
+library(car)
+library(mosaic)
+library(ResourceSelection)
+library(pander)
+library(DT)
+library(ggplot2)
+library(dplyr)
+library(readr)
+```
+
+
+```{r, eval=T}
+happyplace <- read.csv("../data/World Happiness.csv")
+```
+
+
+
+```{r, eval=T}
+myTest <- aov(Trust.Government ~ Year, data = happyplace)
+observedTestStat <- summary(myTest)[[1]]$`F value`[1]
+```
+
+```{r, eval=T}
+N <- 50
+permutedTestStats <- rep(NA, N)
+for (i in 1:N){
+  permutedData <- sample(happyplace$Trust.Government)
+  permutedTest <- aov(permutedData ~ Year, data = happyplace)
+  permutedTestStats[i] <- summary(permutedTest)[[1]]$`F value`[1]
+}
+```
+
+
+```{r}
+hist(permutedTestStats, col = "orchid", xlim = c(0,15), breaks=50)
+```
+
+
+```{r}
+hist(permutedTestStats, col = "orchid", xlim = c(0,55), breaks=50)
+abline(v = observedTestStat, col = "blue", lwd = 2)
+```
+
+```{r}
+# Observed F statistic:
+observedTestStat
+
+# Two-sided p-value:
+sum(permutedTestStats >= observedTestStat)/N*2
+```
+
+```{r}
+boxplot(Trust.Government ~ Year, data = happyplace)
+```
+

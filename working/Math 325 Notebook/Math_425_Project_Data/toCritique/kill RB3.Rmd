@@ -1,0 +1,41 @@
+---
+title: "Untitled"
+author: "Jim Greene"
+date: ""
+output: 
+  html_document:
+    code_folding: "hide"
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+```
+
+
+
+```{r}
+RB3 <- read_csv("RBdata3.csv")
+pairs(RB3)
+```
+ 
+```{r}
+View(abs(cor(RB3)[,1]))
+
+lm2 <- lm(RB3$Y ~ RB3$X2)
+summary(lm2)
+
+lm5 <- lm(RB3$Y ~ RB3$X5)
+summary(lm5)
+library(car)
+boxCox(lm5)
+
+lm0 <- lm(RB3$Y ~ RB3$X10)
+summary(lm0)
+
+lm25083 <- lm(RB3$Y ~ RB3$X2 + RB3$X5 + RB3$X10 + RB3$X8 + RB3$X3 + RB3$X9 + RB3$X4)
+summary(lm25083)
+
+pairs(cbind(R = lm25083$res, Fit = lm25083$fit, RB3))
+
+View(abs(cor(cbind(R = lm25083$res, Fit = lm25083$fit, RB3))[,1:3]))
+```

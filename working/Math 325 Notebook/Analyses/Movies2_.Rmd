@@ -1,0 +1,97 @@
+---
+title: "Making a Mediocre Movie"
+output: 
+  html_document:
+    theme: flatly
+    code_folding: hide
+    toc: false
+    toc_float: false
+---
+
+```{r, include=FALSE}
+library(mosaic)
+library(DT) 
+library(pander) #You'll love this one! 
+# To use it Run this in your Console: install.packages("pander")
+
+movies <- read.csv("../Data/movies.csv", header=TRUE)
+movies2 <- read.csv("../Data/movies2.csv", header=TRUE)
+# To get the movies and movies2 data into your Console, Run:
+# "Session -> Set Working Directory -> To Source File Location"
+# and then, "Play" this R-Chunk with the little green play button.
+```
+
+
+<br />
+
+# Question
+
+If one wanted to release a movie with strong user reviews, which factors would most increase that chance?<br />
+Observed in this analysis are box office films from January 1986 to November 2017. It is not a complete census, but a large sample, with 6,820 entries.<br /><br />
+
+# Analysis
+
+There are several variables we could look at. We'll observe the budget, the film length, and the genre.<br /><br />
+
+<!-- Instructions: Come up with an interesting question and answer it with the "movies" dataset that is provided above. 
+
+Write a Background that gives meaning to your question of interest.
+
+State your Question.
+
+Perform an appropriate "Analysis" that gives useful information for answering your question. The hope would be a really powerful graphic and some summary tables of supporting statistics.
+
+Interpret your analysis and expound on your findings. -->
+
+### Budget
+
+It seems likely that a movie with a high budget would also be "good." But this is the actual distribution of budgets and ratings:<br />
+Movies received good ratings from all budget levels, however, the megaphone shape in this scatter plot shows that as the budget increases the chances of producing a terrible movie tend to become much smaller.
+```{r}
+options(scipen=3)
+plot(score ~ budget, data=movies2, xlab="Budget", ylab="IMDb Score", pch=20)
+```
+<br />For curiosity's sake, the movie with the largest budget in this set was * Pirates of the Caribbean: At World's End* (\$300,000,000) with a rating of 7.1, while *The Dark Knight* was budgeted at $185,000,000 and earned a rating of 9.0.<br /><br />
+
+### Movie Length
+
+This was an interesting variable to look at. The average movie is 106.5 minutes. This trend is somewhat like the budget-score trend and generally speaking, the longer films seem to generate respect. This influence is a bit stronger than budget.
+```{r}
+plot(movies2$runtime, movies2$score, xlab="Movie Length (Minutes)", ylab="IMDb Score", pch=20)
+```
+<br />These are the longest movies are in this table:
+```{r}
+longer <- subset(movies2, runtime >= 200)
+datatable(longer, options=list(lengthMenu = c(3,11)))
+```
+As might have been predicted, the foreign companies have a tendency to be more adventurous.<br />
+The fact that the last two plots have a similar shape suggests that there might be a correlation between budget and runtime. Indeed there is, but it isn't strong nor is it linear. In fact, while there is an overall positive linear correlation of 0.268, the very longest films actually have the smallest budgets.<br /><br />
+
+### Genre
+
+The final variable we wanted to consider was the genre.<br />
+An appropriate null hypothesis for the genres is that the mean IMDb scores are all equal.<br />
+The alternative hypothesis would be that at least one genre has a different mean score.<br />
+From the boxplot below, we can see that the genres are about equal with each other.
+
+```{r}
+par(cex.axis=0.4)
+smaller <- subset(movies2, genre!="War" & genre!="Western" & genre!="Musical")
+smaller$genre <- droplevels(smaller$genre)
+boxplot(score ~ genre, data=smaller, xlab="Genre", ylab="IMDb Score")
+par(cex.axis=1.0)
+```
+<br />
+The genre with the highest variance in score is Adventure (`r var(subset(movies2, genre=="Adventure")$score)`) and the genre with the lowest variance is Biography (`r var(subset(movies2, genre=="Biography")$score)`). These are close enough to conduct an ANOVA test.<br />
+The p-value for a one-way ANOVA test is 5.985127e-165 (very small), so we can conclude that the observed differences are not just by chance. (We'll reject the null hypothesis.)<br />
+The Family genre is the lowest with *Little Nemo: Adventures in Slumberland* (Japanese) and *Nutcracker* (American) rated the highest.<br />Musical, War, and Western each had less than 5 occurrances and were excluded from this plot, but they closely resemble the other genres with respect to IMDb score.<br /><br />
+
+# Interpretation
+
+If one decided to make the movie 140 minutes or longer and used a high enough budget to produce something of quality, they would likely make a well accepted movie.<br />
+The genre was not terribly influential in previous films. One might consider producing a biographical film, but it is uncertain how well a biography would combine with an extended length.<br />
+There are however, many other factors that are likely to influence the score, including the writer, director, acting, music, and cult followings.
+<br /><br />
+
+This analysis was created using the movies2 IMDb data provided by Brother Saunders.
+

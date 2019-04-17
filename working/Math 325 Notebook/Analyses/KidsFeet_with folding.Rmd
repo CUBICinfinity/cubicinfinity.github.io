@@ -1,0 +1,107 @@
+
+
+---
+title: "Kids Feet t Test"
+output: 
+  html_document:
+    theme: spacelab
+    code_folding: hide
+---
+
+```{r, include=FALSE}
+library(mosaic)
+library(DT)
+library(pander)
+library(car)
+library(plyr) # used for the column creation ("gender")
+```
+
+
+
+```{r, eval=FALSE, include=FALSE}
+# Run this in your Console to see the data.
+View(KidsFeet)
+?KidsFeet
+```
+
+<script type="text/javascript">
+ function showhide(id) {
+    var e = document.getElementById(id);
+    e.style.display = (e.style.display == 'block') ? 'none' : 'block';
+ }
+</script>
+<!-- Instructions
+
+1. Use the KidsFeet dataset in R to come up with a question that can be answered with a t Test (One Sample, Paired Samples, or Independent Samples).
+
+2. Establish why the question is interesting. State the question in written form as well as with a statistical "null" and "alternative" hypothesis.
+
+3. Clearly answer your question using statistics. Be sure to compute a p-value and provide supporting numerical and graphical summaries. Also be sure to establish whether or not the requirements of your t test have been satisfied. (See the Math 325 Notebook for details.)
+
+-->
+## Background
+
+The library Mosaic includes the "KidsFeet" dataset. It comes from a study interested in comparing the foot widths of boys and girls in the 4th grade.
+
+While exploring this data I became interested in the width/length ratio of the feet. I decided to focus on the difference between the shapes of the feet between the girls and boys.
+
+This turns out to be the same thing that Mary Meyer was analysing in 1997. She wanted to challenge the claim that boys feet are wider, when her daughter was limited to narrower shoes. (See the R Documentation and reference)
+
+Originally, I wanted to see if there was a difference between foot shapes for the genders, but the general belief seems to already be that boys feet are wider. So I will let that be the null hypothesis and conduct the test to see if boys feet are not relatively wider:
+
+$$
+  H_0: \mu_{\text{width/lenth of boys' feet}} - \mu_{\text{width/length of girls' feet}} > 0
+$$
+$$
+  H_a: \mu_{\text{width/lenth of boys' feet}} - \mu_{\text{width/length of girls' feet}} \le 0
+$$
+This table shows the full dataset:
+```{r}
+datatable(KidsFeet, options=list(lengthMenu =c(5,10,39)))
+```
+
+## Analysis
+From the scatterplot below it appears that the regression lines (correlation between width and length) for boys and girls are about paralell to each other:
+```{r}
+plot(width ~ length, data=subset(KidsFeet, sex=="G"), pch=16,col="red", ylim = c(7.9, 9.8), xlim = c(21.65, 27.5))
+title(expression("Childrens' Feet (" * phantom("Girls") * "," *phantom(" Boys") * ")"), col.main = "black")
+title(expression(phantom("Childrens' Feet (Girls, ") * "Boys"), col.main = "blue")
+title(expression(phantom("Childrens' Feet (") * "Girls" * phantom(", Boys)")), col.main = "red")
+points(width ~ length, data=subset(KidsFeet, sex=="B"), pch=16,col="blue")
+abline(lm(width ~ length, data=subset(KidsFeet, sex=="B")), col="blue")
+abline(lm(width ~ length, data=subset(KidsFeet, sex=="G")), col="red")
+```
+</br >
+It isn't appropriate to make a certain inference just by looking at this graph, so I will run a mathematical test on the data.
+</br >
+This analysis is focused on comparing the ratios of the widths and lengths of feet between boys and girls.
+</br >
+To check for normality I created a Q-Q plot for each sex, Boy and Girl:
+```{r}
+boyfeet <- subset(KidsFeet, sex=="B")
+girlfeet <- subset(KidsFeet, sex=="G")
+library(car)
+library(mosaic)
+qqPlot(boyfeet$width/boyfeet$length, ylab="Width/Length Ratio", main="Boys Feet")
+qqPlot(girlfeet$width/girlfeet$length, ylab="Width/Length Ratio", main="Girls Feet")
+```
+</br >
+The sample is normally distributed for both boys and girls. This means I can confidently conduct a t test. I choose to use a 0.05 level of significance. The results are summarized below:
+```{r, warning=FALSE}
+pander(t.test(width/length ~ sex, data=KidsFeet, alternative="less"))
+```
+<center>
+#### Box Plot and Statistical Summary
+</center>
+
+```{r}
+KidsFeet$gender <- revalue(KidsFeet$sex, c("B"="Boy", "G"="Girl"))
+boxplot(width/length ~ gender, data=KidsFeet, col=c("blue","red"), main="Visual Comparison of Ratios", ylab="Foot Width/Length")
+```
+
+```{r}
+pander(favstats(width/length ~ gender, data=KidsFeet))
+```
+
+# Interpretation
+The P-value for this test is 0.8075, which does not give me a reason to reject the notion that boys feet are proportionally wider than girls feet. It is worth noting that this particular sample represents boys with a slightly wider average foot than girls. With a larger sample, I could tell with more certainty. It would also be important to collect a more random sample as this was just a convenience sample from one 4th grade class.

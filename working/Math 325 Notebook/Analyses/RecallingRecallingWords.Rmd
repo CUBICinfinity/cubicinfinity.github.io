@@ -1,0 +1,46 @@
+---
+title: "Recalling Recalling Words"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(mosaic)
+library(car)
+library(DT)
+datatable(Friendly)
+```
+
+## Background
+
+In the `RecallingWords` analysis of Week 4 (Wilcoxon Tests) you were restricted to testing only two groups at a time. Revisit that analysis with a Kruskal-Wallis Test. What advantages and disadvantages does this approach have over your original analysis?
+
+
+## Graphic
+
+```{r}
+
+```
+
+
+## Summary Table
+
+```{r}
+
+```
+
+
+## Kruskal-Wallis Test
+
+```{r}
+
+```
+
+
+
+## Interpretation
+
+
+
+## Conclusion
+
+Be sure to compare how the conclusions of this approach differ from your conclusions of your Wilcoxon Test analysis. Which approach do you find more meaningful, and why?

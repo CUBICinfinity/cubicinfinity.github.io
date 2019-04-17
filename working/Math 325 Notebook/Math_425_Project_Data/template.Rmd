@@ -1,0 +1,18 @@
+---
+title: "Untitled"
+author: "Jim Greene"
+date: ""
+output: 
+  html_document:
+    code_folding: "hide"
+---
+
+```{r setup, include=FALSE}
+
+```
+
+
+
+```{r}
+read.csv("RBdata1.csv")
+```

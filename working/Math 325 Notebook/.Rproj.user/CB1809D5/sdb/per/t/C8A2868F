@@ -1,0 +1,21 @@
+{
+    "collab_server" : "",
+    "contents" : "# First run the initial test and gain the test statistic:\nmyTest <- t.test(extra ~ group, data = sleep, mu = 0)\nobservedTestStat <- myTest$statistic\n\n# Now we run the permutation for a distribution of test statistics\nN <- 50000\npermutedTestStats <- rep(NA, N)\nfor (i in 1:N){\n  permutedData <- sample(sleep$group)\n  permutedTest <- t.test(extra ~ permutedData, data = sleep, mu = 0)\n  permutedTestStats[i] <- permutedTest$statistic\n}\n\n# Now we create a histogram of that distribution\nhist(permutedTestStats, col = \"skyblue\", breaks=5000)\nabline(v = observedTestStat, col = \"red\", lwd = 3)\n\n#Greater-Than p-value: Not the correct one in this case\nsum(permutedTestStats >= observedTestStat)/N\n\n# Less-Than p-value: This is the corret one\nsum(permutedTestStats <= observedTestStat)/N\n\n# Two-Sided p-value\n2*sum(permutedTestStats <= observedTestStat)/N\n\n",
+    "created" : 1522888430653.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2517576163",
+    "id" : "C8A2868F",
+    "lastKnownWriteTime" : 1522888162,
+    "last_content_update" : 1522888162,
+    "path" : "C:/Users/Jim/Desktop/MATH 325/Math 325 Notebook/permuationtests.R",
+    "project_path" : "permuationtests.R",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

@@ -1,0 +1,89 @@
+---
+title: "Bee Analysis"
+author: "Jim Greene"
+date: "April 7, 2018"
+output:
+  html_document:
+    code_folding: hide
+    theme: flatly
+---
+
+```{r, include=F}
+library(car)
+library(mosaic)
+library(ResourceSelection)
+library(pander)
+library(DT)
+library(ggplot2)
+library(dplyr)
+library(readr)
+```
+
+### Background
+
+# {.tabset .tabset-fade}
+
+## Explanation
+The OrchardSprays dataset contains the results of a test conducted in 1947. The purpose of the test was to see how well lime sulfur could prevent bees from pollinating trees.
+Honey comb cells were filled with a sucrose solution. Bees were given two hours to collect the solution. In 64 samples, 8 different levels of lime sulfer were added to the solutions, 8 observations per level. The amount of the solution collected by the bees was recorded.
+
+## Data
+"decrease" is the amount of solution consumed. </br>
+"treatment" is the concentration of lime sulfer as indicated: </br>
+$A = \frac{1}{100}\text{    }$
+$B = \frac{1}{500}\text{    }$
+$C = \frac{1}{2,500}\text{    }$
+$D = \frac{1}{12,500}\text{    }$
+$E = \frac{1}{62,500}\text{    }$
+$F = \frac{1}{312,500}\text{    }$
+$G = \frac{1}{1,562,500}\text{    }$
+$H = 0$ </br>
+The samples were arranged in a [Latin square](https://en.wikipedia.org/wiki/Latin_square).
+<center>
+```{r}
+pander(OrchardSprays)
+```
+</center>
+#
+
+### Analysis and Interpretation
+
+Was there a difference in the levels of sulfer?
+$$
+H_0: \text{There is no difference in the mean depletion of sucrose solution for each level of sulfur}
+$$
+$$
+H_a: \text{At least one of the levels has a different mean}
+$$
+</br>
+I have no idea if the requirements are met for an ANOVA test, but I don't care because I can use a permutation test instead.
+```{r, eval=T}
+myTest <- aov(decrease ~ treatment, data = OrchardSprays)
+observedTestStat <- summary(myTest)[[1]]$`F value`[1]
+
+N <- 1000
+permutedTestStats <- rep(NA, N)
+for (i in 1:N){
+  permutedData <- sample(OrchardSprays$decrease)
+  permutedTest <- aov(permutedData ~ treatment, data = OrchardSprays)
+  permutedTestStats[i] <- summary(permutedTest)[[1]]$`F value`[1]
+}
+
+```
+
+This distribution is the result of 1,000,000 random permutations:
+```{r}
+hist(permutedTestStats, col = "orchid", xlim = c(0,20), breaks=50, main="Histogram of Permuted Test Statistics", xlab="Test Statistic")
+abline(v = observedTestStat, col = "blue", lwd = 2)
+```
+</br>
+The blue line represents the observed statistic. It is `r observedTestStat`. Comparing to the statistic distribution of random order gives a two-sided P-value of `r sum(permutedTestStats >= observedTestStat)/N*2`. The observation is clearly significant.
+
+```{r}
+boxplot(decrease ~ treatment, data=OrchardSprays, main="Orchard Honey Bee Repelant", ylab="Sugar Water Depletion", xlab="Lime Sulfur Concentration", xaxt="n", col="#caf219") 
+axis(1, at=1:8, labels=c(".01", ".002",".0004",".00008","1.6e-5","3.2e-6","6.4e-7","0"))
+```
+
+Most levels are dramatically different from each other. A concentration of 1/2,500 (.0004) or more works well at repelling bees, depending on how much the bees need to be repelled.
+
+Also, we now wonder if using 1,000,000 permutations is less work than checking the ANOVA assumptions. It's okay though because my distribution is crazy accurate.

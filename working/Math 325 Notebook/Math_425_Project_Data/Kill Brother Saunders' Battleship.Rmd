@@ -1,0 +1,58 @@
+---
+title: "Untitled"
+author: "Jim Greene"
+date: ""
+output: 
+  html_document:
+    code_folding: "hide"
+---
+
+```{r setup, include=FALSE}
+data <- read.csv("data/saundersW19_RBdata.csv")
+```
+
+
+
+```{r}
+View(data)
+pairs(data)
+
+View(abs(cor(data)[,1]))
+
+model <- lm(Y ~ X10, data = data)
+
+pairs(cbind(R = model$res, Fit = model$fit, data), col = factor(data$X4))
+
+data$X11 <- ifelse(data$X4 == 0, 1, 0)
+data$X12 <- ifelse(data$X4 == 1, 1, 0)
+
+model2 <- lm(Y ~ X10 + X11 + X12 + X10:X11 + X10:X12, data = data)
+summary(model2)
+
+pairs(cbind(R = model2$res, Fit = model2$fit, data), col = factor(data$X4))
+
+plot(model2$re ~ data$X10)
+
+plot(model2, which = 1)
+
+library(car)
+boxCox(model2)
+
+
+model3 <- lm(Y ~ I(X10^1.5) + (X4==0) + (X4==1) + I(X10^1.5):(X4==0) + I(X10^1.5):(X4==1), data = data)
+summary(model3)
+plot(model3, which = 1)
+boxCox(model3)
+
+c <- model2$coef
+
+plot(Y ~ X10, col = factor(data$X4), data = data)
+abline(c[1] + c[2])
+```
+
+
+```{r}
+library(tidyverse)
+
+%>% 
+```

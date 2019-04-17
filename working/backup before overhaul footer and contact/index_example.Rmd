@@ -1,0 +1,235 @@
+---
+title: "Table of Contents"
+output: 
+  html_document:
+    theme: cerulean
+---
+
+<br>
+
+----
+
+Customize this page so that it becomes a useful *Guide to Statistical Analysis* for your *current* and *future* self. 
+
+
+
+
+
+----
+
+<div style="float:left;width:125px;" align=center>
+<img src="./Images/QuantY.png" width=35px;>
+</div>
+<div style="padding-left:125px;">
+<!-- Add your customizations in the area below: -->
+
+**1 Quantitative Variable**
+
+Y is a response variable
+/# means quantitative
+
+A histogram may be good for this.
+
+[One Sample or Paried Samples, t Test](tTests.html)
+(Normal data)
+
+[Signed-Rank, Wilcoxon Test](WilcoxonTests.html)
+(Non-parametric data)
+
+[Histogram, Boxplot, or Dotplot](GraphicalSummaires.html)
+
+[Mean, median, five-number summary, standard deviation](NumericalSummaries.html)
+
+<!------------------------------------------------>
+</div>
+<div style="clear:both;"></div>
+
+----
+
+<div style="float:left;width:125px;" align=center>
+<img src="./Images/QuantYQualXg2.png" width=59px;>
+</div>
+<div style="padding-left:125px;">
+<!-- Add your customizations in the area below: -->
+
+**1 Quantitative Variable | 2 Groups**
+
+X is an explanatory variable: A and B are the 2 groups.
+
+A good graph might be box or dot plots, depending of the counts
+
+[2 Independent Samples, t Test](tTests.html)
+(Normal data)
+
+[Rank Sum, Wilcoxon Test](WilcoxonTests.html)
+(Non-parametric data)
+
+<!------------------------------------------------>
+</div>
+<div style="clear:both;"></div>
+
+----
+
+<div style="float:left;width:125px;" align=center>
+<img src="./Images/QuantYQualXg3plus.png" width=59px;>
+</div>
+<div style="padding-left:125px;">
+<!-- Add your customizations in the area below: -->
+
+**1 Quantitative Variable | 3+ Groups**
+
+
+A good graph might be box or dot plots, depending of the counts
+
+[One-Way ANOVA](ANOVA.html)
+(Check for normality and variance)
+
+[Kruskal-Wallis Rank Sum](Kruskal.html)
+(Data is non-parametric)
+
+<!------------------------------------------------>
+</div>
+<div style="clear:both;"></div>
+
+----
+
+<div style="float:left;width:125px;" align=center>
+<img src="./Images/QuantYQuantX.png" width=59px;>
+</div>
+<div style="padding-left:125px;">
+<!-- Add your customizations in the area below: -->
+
+**2 Quantitative Variables**
+
+
+mylm <- lm( ~ , data=)</br>
+summary(mylm)</br>
+plot(mylm, which=1:2)</br>
+abline(mylm)
+
+
+mylm\$coefficients</br>
+mylm\$residuals</br>
+mylm\$fitted.values
+
+
+[Single or Multiple Regression](LinearRegression.html)
+
+
+<!------------------------------------------------>
+</div>
+<div style="clear:both;"></div>
+
+----
+
+<div style="float:left;width:125px;" align=center>
+<img src="./Images/QuantYMultX.png" width=110px;>
+</div>
+<div style="padding-left:125px;">
+<!-- Add your customizations in the area below: -->
+
+**1 Quantitative Response | Multiple Explanatory Variables**
+
+To view data, might use A, B, and A:B boxplots
+
+[2-or more-way ANOVA](ANOVA.html)
+(Check for normality and variance)
+
+[Multiple Regression](LinearRegression.html)
+(Same as above)
+
+x <- </br>
++ \* x
+
+
+<!------------------------------------------------>
+</div>
+<div style="clear:both;"></div>
+
+----
+
+<div style="float:left;width:125px;" align=center>
+<img src="./Images/BinomYQuantX.png" width=59px;>
+</div>
+<div style="padding-left:125px;">
+<!-- Add your customizations in the area below: -->
+
+**Binomial Response | 1 Explanatory Variable**
+
+[Logistic Regression](LogisticRegression.html)
+
+myglm <- glm( ~ , data=, family=binomial)</br>
+summary(myglm)</br>
+
+Assumtions with many duplicate values:</br>
+pchisq(residual deviance, df for residual deviance, lower.tail=F)
+
+Assumptions with few duplicates:</br>
+library(ResourceSelection)</br>
+hoslem.test(myglm$y, myglm\$fited)
+
+x <- </br>
+exp( + \* x)/(1+exp( + *x))
+
+<!------------------------------------------------>
+</div>
+<div style="clear:both;"></div>
+
+----
+
+<div style="float:left;width:125px;" align=center>
+<img src="./Images/BinomYMultX.png" width=110px;>
+</div>
+<div style="padding-left:125px;">
+<!-- Add your customizations in the area below: -->
+
+**Binomial Response | Multiple Explanatory Variables**
+
+[Multiple Logistic Regression](LogisticRegression.html)
+
+
+
+
+
+
+<!------------------------------------------------>
+</div>
+<div style="clear:both;"></div>
+
+----
+
+<div style="float:left;width:125px;" align=center>
+<img src="./Images/QualYQualX.png" width=59px;>
+</div>
+<div style="padding-left:125px;">
+<!-- Add your customizations in the area below: -->
+
+**2 Qualitative Variables**
+
+Your favorite test:</br>
+[Chi-squared](ChiSquaredTests.html)
+
+
+
+
+<!------------------------------------------------>
+</div>
+<div style="clear:both;"></div>
+
+----
+
+<div style="float:left;width:125px;" align=center>
+<img src="./Images/PermLogo.png" width=90px;>
+</div>
+<div style="padding-left:125px;">
+<!-- Add your customizations in the area below: -->
+
+**Permutation Testing**
+
+
+[Quick Link](PermutationTests.html)
+
+See also, [Nonparametric Chi-Squared Tests](ChiSquaredTests.html)
+
+<footer></footer>
+

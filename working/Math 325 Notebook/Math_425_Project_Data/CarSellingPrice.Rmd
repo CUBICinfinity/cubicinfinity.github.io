@@ -1,0 +1,87 @@
+---
+title: "Used Chevy Aveos"
+author: "Jim Greene"
+date: "February 1, 2019"
+output: 
+  html_document:
+    code_folding: "hide"
+    theme: "cerulean"
+---
+
+```{r setup, include=FALSE}
+library(car)
+library(tidyverse)
+setwd("C:/Users/Jim/Desktop/MATH 325/Math 325 Notebook")
+aveo <- read_csv("Math_425_Project_Data/data/Chevy_Aveo.txt")
+# par(mfrow=c(1,1))
+dev.off()
+library(pander)
+```
+
+```{r}
+# aveo_lm <- lm(Price ~ Mileage, data = aveo)
+# boxCox(aveo_lm, lambda = seq(-2, -0.5, 0.1))
+aveo_lm_b <- lm(1/Price ~ Mileage, data = aveo)
+aveo_lm_c <- lm(Price ~ 1/Mileage, data = aveo)
+```
+
+```{r}
+plot(Price ~ Mileage, aveo, pch = 15, col = "blue", main = "Used Chevy Aveos (Years 2004-2007) Listed on KSL", sub = "*Note: My car was not purchased on KSL.", cex.sub = 0.75, ylim = c(1500, 5487))
+curve(1/(aveo_lm_b$coef[1] + aveo_lm_b$coef[2] * x), add = TRUE, lwd = 2)
+points(107000, 2000, col = "green", pch = 19)
+points(175000, 1/(aveo_lm_b$coef[1] + aveo_lm_b$coef[2] * 175000), col = "red", pch = 19)
+legend("topright", pch = c(15, 19, 19), col = c("blue", "green", "red"), legend = c("Observed cars", "My car at purchase*", "When I might sell"), bty = 'n', cex = 0.8, y.intersp = 1.3, inset = 0.06)
+
+prediction <- 1/predict(aveo_lm_b, data.frame(Mileage = 107000), interval = "prediction")
+abline(h = prediction, v = 107000, lty = 2)
+
+```
+
+```{r}
+## Gave up on making the curve work, but I will figure it out on a future project
+# aveo %>% 
+#   ggplot(aes(x = Mileage, y = Price)) +
+#   geom_point() +
+#   # geom_curve(aes(intercept = aveo_lm_b$coef[1], slope = aveo_lm_b$coef[2])) +
+#   stat_smooth(method = "lm", formula = y ~ 1/(aveo_lm_b$coef[1] + aveo_lm_b$coef[2] * x), size = 1, color = "navyblue", se = F) +
+#   labs(title = "Used Chevy Aveos (Years 2004-2007) Listed on KSL") +
+#   theme_bw() +
+#   theme(panel.background = element_rect(fill = "lightblue"))
+```
+
+My linear regression uses this formula:
+
+$$
+  \underbrace{\hat{Y}_i}_\text{Price} = \frac{1}{0.000235 + \text{1.595e-09} \underbrace{X_i}_\text{Mileage}} \ + \overbrace{\epsilon_i}^\text{Individual Error} \quad \text{where} \ \epsilon_i \sim N(0,\sigma^2)
+$$
+Based on that formula, my car was worth about \$2,465 when I got it. I don't have the exact mileage of my car when I got it, so I guessed by memory that it was 107,000. I paid \$2,000 for it, which is a difference of \$465. If I sell it at 175,000 miles it will, based on this model, be worth \$1,945. This formula may not work for Chevy Aveos with mileages outside the domain of the data it was built from.
+
+The best time to sell a Chevy Aveo could be at 100,000 miles.
+
+```{r, fig.height = 3}
+par(mfrow = c(1,3))
+plot(aveo_lm_b, which = 1)
+qqPlot(aveo_lm_b$residuals, main = "QQ-Plot", ylab = "Residuals")
+plot(aveo_lm_b$residuals ~ seq_len(length(aveo_lm_b$residuals)), xlab = "Order", main = "Order of Residuals", ylab = "Residuals")
+```
+
+Looking at these diagnostic plots it seems that the requirements are met. The only one that looks questionable is the linearity shown by the red line in the fitted values plot. I think collecting more data would result in a slightly different model, but this still shows what the 2004 - 2007 Aveos are worth, or at least listed for currently.
+
+$$
+H_0: \beta_0 = 0
+\\H_0: \beta_1 = 0
+$$
+
+$$
+H_a: \beta_0 \ne 0
+\\H_a: \beta_1 \ne 0
+$$
+The slope and intercept p-values are both below 0.05 as seen in this summary, so I could reject the null hypotheses:
+```{r}
+pander(summary(aveo_lm_b))
+```
+
+Data:
+```{r}
+pander(aveo)
+```

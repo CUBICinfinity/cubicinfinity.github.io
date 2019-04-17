@@ -1,0 +1,21 @@
+{
+    "collab_server" : "",
+    "contents" : "library(car)\nlibrary(mosaic)\nlibrary(ResourceSelection)\nlibrary(pander)\nlibrary(DT)\nlibrary(ggplot2)\nlibrary(plyr)\nlibrary(readr)\n",
+    "created" : 1521217265491.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2445629504",
+    "id" : "3563F01D",
+    "lastKnownWriteTime" : 1523637003,
+    "last_content_update" : 1523637003583,
+    "path" : "C:/Users/Jim/Desktop/MATH 325/Math 325 Notebook/libraries.R",
+    "project_path" : "libraries.R",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
