@@ -1,6 +1,0 @@
-"0","set.seed(121)"
-"0","sample1 <- rnorm(30, 185, 8)"
-"0","sample2 <- sample1 - rnorm(30, 0, 3.5)"
-"0","theData <- data.frame(values = c(sample1,sample2), group = rep(c(1,2), each=30), id = rep(c(1:30),times=2))"
-"0","View(theData)"
-"0","with(theData, hist(values[group==1] - values[group==2]))"

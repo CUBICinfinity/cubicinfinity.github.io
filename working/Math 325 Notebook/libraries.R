@@ -1,8 +1,0 @@
-library(car)
-library(mosaic)
-library(ResourceSelection)
-library(pander)
-library(DT)
-library(ggplot2)
-library(plyr)
-library(readr)
