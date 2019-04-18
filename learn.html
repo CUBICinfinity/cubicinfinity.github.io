@@ -5,10 +5,36 @@
 <title>Jim Greene</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<script type="text/javascript">
+ function showhide(id) {
+    var e = document.getElementById(id);
+    e.style.display = (e.style.display == 'block') ? 'none' : 'block';
+ }
+ 
+ function openTab(evt, tabName) {
+    var i, tabcontent, tablinks;
+    tabcontent = document.getElementsByClassName("tabcontent");
+    for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+    }
+    tablinks = document.getElementsByClassName("tablinks");
+    for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" active", "");
+    }
+    document.getElementById(tabName).style.display = "block";
+    evt.currentTarget.className += " active";
+ }
+</script>
+
 <style>
 * {
   box-sizing: border-box;
   font-family: Arial, Helvetica, sans-serif;
+}
+
+html {
+  background-color: black;
 }
 
 body {
@@ -162,7 +188,19 @@ img {
   <h1> Learn </h1>
   <h2> <a href="LowessRobustLeastSquares.html">LOWESS Curves and Robust Linear Models</a> <h2/>
   <img src="robust.png" style="width:20em">
-  <br/> <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+  
+  <a href="javascript:showhide('ProjectM')" style="font-size:.675em;"><h2 style="padding-top:2.5em"> Resources for Project Management <h2/> </a>
+  
+    <div id="ProjectM" style="display: none;">
+		<h3 style="font-size:.5em;margin-top:0em;margin-bottom:0em"> <a href="Project Management Methods.pdf">Project Management Methods</a> <h3/> 
+		<h3 style="font-size:.5em;margin-top:0em;margin-bottom:0em"> <a href="words.pdf">Stuff I've Learned about Projects and Life</a> <h3/>
+		<img src="Methods2.png" style="width:5em;margin-top:0px">
+		<h3 style="font-size:.5em;margin-top:0em;margin-bottom:0em"> The Marshmallow Challenge</h3>
+		<iframe width="516" height="411" src="https://www.youtube.com/embed/H0_yKBitO8M" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </div>
+	
+  
+  
 </div>
 
 
