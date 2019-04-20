@@ -640,7 +640,7 @@ summary(air_rlm)</code></pre>
 ## Residual standard error: 5.826 on 113 degrees of freedom</code></pre>
 </div>
 <p></br></p>
-<p>The difference with a robust linear model is that while the typical linear regression assumes all data is equally important, robust models reduces the weight of points depending on how much the line changes if those points are removed. The points that would influence the line more are trusted less. It is also an iterative process: A normal initial regression is done and then the weights are computed. Then a new regression is done, and so on, until the model stops changing.</p>
+<p>The difference with a robust linear model is that while the typical linear regression assumes all data is equally important, robust models reduce the weight of points depending on how much the line changes if those points are removed. The points that would influence the line more are trusted less. It is also an iterative process: A normal initial regression is done and then the weights are computed. Then a new regression is done, and so on, until the model stops changing.</p>
 <pre class="r"><code>plot(Temp ~ Ozone, air2, pch = 16, col = &quot;darkgray&quot;, main = &quot;Normal vs Robust Linear Regression with the 'airquality' Dataset&quot;)
 curve(air_lm$coef[1] + air_lm$coef[2]*x + air_lm$coef[3]*x^2, add = T, col = &quot;firebrick&quot;)
 curve(air_rlm$coef[1] + air_rlm$coef[2]*x + air_rlm$coef[3]*x^2, add = T, col = &quot;skyblue&quot;)
