@@ -1,7 +1,16 @@
-@import url('https://fonts.googleapis.com/css?family=Dosis|Sedgwick+Ave+Display&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Dosis|Barlow|Sedgwick+Ave+Display|Lacquer&display=swap');
+
+@font-face {
+    font-family: 'cubicinfinity';
+    src: url('cu.inf/cubicinfinity-regular-webfont.woff2') format('woff2'),
+         url('cu.inf/cubicinfinity-regular-webfont.woff') format('woff'),
+         url('cu.inf/Cubicinfinity-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
 
 body {
-  background-color: #e9e9e9;
+  background-color: #f9f9f9;
 }
 
 header {
@@ -15,14 +24,25 @@ a {
 
 .logo {
   float: left;
-  font-family: Sedgwick Ave Display;
+  font-family: 'cubicinfinity';
+  font-weight: normal;
+  font-style: normal;
   padding-left: 10%;
 }
 
 .bio {
   float: right;
-  padding-right: 10%;
+  padding: 0.5em;
+  margin-right: 10%;
   font-family: Dosis;
+  font-weight: normal;
+  font-style: normal;
+  /*border-style:  solid;
+  border-color: #444;
+  text-align: center;
+  background-color: #FeFeFe;
+  border-radius: 0.4em 0.1em 0.1em 0.4em;
+  padding-left: 0.5em;*/
 }
 
 .articles {
@@ -36,17 +56,42 @@ a {
   padding-top: 4em;
 }
 
+@media only screen and (max-width: 73em) {
+  .articles {
+    grid-template-columns: auto auto;
+    width: 26.7em;
+    margin-left: 3.5em;
+  }
+}
+
+@media only screen and (max-width: 50em) {
+  .articles {
+    grid-template-columns: auto;
+    width: 13.3em;
+    margin-left: 3.5em;
+  }
+}
+
 .frame {
   background-color: #fefefe;
   padding: 0.5em;
   margin: 0.5em;
   transition: 0.07s;
   box-shadow: 0 0 0.15em rgba(0, 0, 0, 0.75);
+  padding-bottom: 0.7em;
+  color: black;
+  text-decoration: none;
 }
 
 .frame:hover {
   transform: scale(1.025);
   transition: 0.07s;
+}
+
+.shortlines {
+  padding-top: 0.1em;
+  padding-bottom: 0.1em;
+  margin: 0em;
 }
 
 .image {
@@ -70,5 +115,5 @@ a {
 }
 
 footer {
-  margin-top: 2em;
+  margin-top: 2.5em;
 }
