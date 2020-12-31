@@ -1,0 +1,33 @@
+word text wow cool
+a 24w 0=- 24 2354u9m6vc
+ u8i[poyvm[,ooi v0pm5ibymv[pmc
+v5tmk g   gkw4[p 5vu9oq ki 5cj5p5ob
+kfe3
+
+# word characters
+\w
+
+# more:
+[\x{00C0}-\x{00D6}\x{00D8}-\x{00F6}\x{00F8}-\x{024F}\x{1E02}\x{1E03}\x{1E0A}\x{1E0B}\x{1E1E}-\x{1E41}\x{1E56}\x{1E57}\x{1E60}\x{1E61}\x{1E6A}\x{1E6B}\x{1E80}-\x{1E85}\x{1E9B}\x{1EF2}\x{1EF3}\x{0259}\x{027C}\x{0292}\x{0360}-\x{0373}\x{0376}-\x{037D}\x{037F}\x{0384}-\x{0386}\x{0388}-\x{03FF}\x{1F00}-\x{1FFF}]
+
+# Even more:
+[\x{0400}-\x{0481}\x{0483}-\x{0487}\x{048A}-\x{04FF}\x{FB00}-\x{FB4F}\x{2C60}-\x{2C7F}\x{A720}-\x{A7FF}\x{AB30}-\x{AB6F}\x{0250}-\x{02AF}\x{1D00}-\x{1D7F}\x{1D80}-\x{1DBF}\x{0300}-\x{036F}\x{1AB0}-\x{1AFF}\x{FE20}-\x{FE2F}\x{1DC0}-\x{1DFF}\x{2C00}-\x{2C5F}\x{0500}-\x{052F}\x{2DE0}-\x{2DFF}\x{A640}-\x{A69F}\x{1C80}-\x{1C8F}\x{0530}-\x{058F}]
+
+# stopped after armenian
+
+what's up?
+baño pizza fries
+test-to-speech
+dss'fsef'sfec-fescd'sedc'cae
+-wed2--da33'32d''2-
+m2m31sad2m2-d2c2mrc2-2c443x5 fox bag 1 2 23 24-2523 7823-235-_23522_93427
+bacon 2d23ec34c cheese 349d34k5 394k8q42jd house camp 239d5j2q8s3k
+wow, man! 4.8 223e 3..23423? 214 we2 adaw 1213 14134 e32342 f2351x 235145 w242-23235-wxwxwexwe-2323ewd2-23eds 4:30 0i9 when:? When: wesaysdfw 
+(208) 1212-141 (this is in parenths.) (vat) sdq)21(dd2d22c man(pant)cowsa 
+2,322,242,3 345425 463465  223
+* 
++.
+= 
+cand+bans+d23
+bacon\asda\\asdaww/ ds/sesed
+
