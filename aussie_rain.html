@@ -958,7 +958,7 @@ rain2 &lt;- unimputed_rain %&gt;%
 <h1>Improvement</h1>
 <p>Initially, I filtered to the first imputed data set as a test but I meant to use all 10 datasets for training eventually, so I’ll do that now.</p>
 <p>Since the data is 10 times the size, I reduced the <code>patience</code> argument from 25 to 20. I also decreased the maximum number of epochs, but this didn’t make a difference; in both cases the maximum was not reached.</p>
-<p>So unfortunately, since I also changed the patience parameter, the effects of a larger training set are confounded with it. I still didn’t do any scaling.</p>
+<p>Since I also changed the patience parameter, the effects of a larger training set are confounded with it. I didn’t do any scaling though, which helps make these results more comparable.</p>
 <div id="get-predictions" class="section level3">
 <h3>Get Predictions</h3>
 <pre class="r"><code># *Starting with a fresh R session*
