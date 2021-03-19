@@ -1,9 +1,101 @@
 <!DOCTYPE html>
 <html>
+<title>Modular Visualizer - cubicinfinity.github.io</title>
+<meta charset = "UTF-8">
+<style>
+.button {
+  padding: 0.5em;
+  margin: 0.5em auto;
+  width: 15em;
+  background: #d9d9d9;
+  color: #444;
+  text-align: center;
+  font-size: 1em;
+  cursor: pointer;
+  transition: 0.3s;
+  border-radius: 0;
+  display: flex;
+  justify-content: center;
+}
+
+.fields{
+  font-size: 1em;
+  display: flex;
+  justify-content: center;
+}
+
+.section {
+  margin: 1em;
+}
+
+.entry {
+  display: flex;
+  justify-content: auto;
+  margin: 0.25em 0;
+}
+
+h4 {
+  font-size: 1em;
+  display: flex;
+  justify-content: center;
+  margin: 1em;
+}
+
+</style>
 <body>
+<p> Description of this page </p>
+
+<div class="fields">
+  <div class="section">
+    <h4> Values </h4>
+    <div class="entry">
+      <label> Numerator <input type="number" id="numerator"></label>
+    </div>
+    <div class="entry">
+      <label> Denominator <input type="number" id="denominator"></label>
+    </div>
+    <div class="entry">
+      <label> Base of expression <input type="number" id="base"></label>
+    </div>
+    <div class="entry">
+      <label>
+        <input type="checkbox" id="limitPrecision"> 
+        Max precision 
+        <input type="number" id="precision">
+      </label>
+    </div>
+    <div class="entry">
+      <label>
+        <input type="checkbox" id="repeatOnly"> 
+        Hide non-repeating digits
+      </label>
+    </div>
+    <div class="button" onclick="compute()"> Compute </div>
+  </div>
+  <div class="section">
+	<h4> Appearance </h4>
+	<div class="entry">
+	  <label><input type="checkbox" id="showDigits" checked> Show digits </label>
+	</div>
+	<div class="entry">
+	  <label><input type="checkbox" id="directional" checked> Directional lines </label>
+	</div>
+	<div class="entry">
+	  <label> Initial line color (HTML) <input type="text" id="lineColor1" value="#ff000088"></label>
+	</div>
+	<div class="entry">
+	  <label> Repeating line color (HTML) <input type="text" id="lineColor2" value="red"></label>
+	</div>
+	<div class="entry">
+	  <label> Background color (HTML) <input type="text" id="backgroundColor" value="black"></label>
+	</div>
+    <div class="button" onclick="format()"> Update </div>
+  </div>
+</div>
 
 <script src="C:/Users/Jim/Desktop/DataScience/cubicinfinity.github.io/modulus.js">
 </script>
+
 
 </body>
 </html>
