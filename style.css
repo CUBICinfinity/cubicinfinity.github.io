@@ -98,13 +98,14 @@ a {
   margin: auto;
   font-family: Dosis;
   text-align: center;
+
 }
 
 @media only screen and (max-width: 73em) {
   .articles {
     grid-template-columns: auto auto;
     width: 26.7em;
-    margin-left: 3.5em;
+    margin-left: 0.5em;
   }
 }
 
