@@ -113,7 +113,17 @@ a {
   .articles {
     grid-template-columns: auto;
     width: 13.3em;
-    margin-left: 0.5em;
+    margin-left: 0;
+  }
+
+  .logo {
+    margin-bottom: 0;
+  }
+
+  .bio {
+    float: left;
+    margin: 0;
+    margin-bottom: 1em;
   }
 }
 
