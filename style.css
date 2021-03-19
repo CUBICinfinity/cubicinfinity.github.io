@@ -105,7 +105,7 @@ a {
   .articles {
     grid-template-columns: auto auto;
     width: 26.7em;
-    margin-left: 0.5em;
+    margin-left: 3.5em;
   }
 }
 
@@ -113,7 +113,7 @@ a {
   .articles {
     grid-template-columns: auto;
     width: 13.3em;
-    margin-left: 3.5em;
+    margin-left: 0.5em;
   }
 }
 
