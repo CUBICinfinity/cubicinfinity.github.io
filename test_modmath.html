@@ -4,6 +4,21 @@
 <meta charset = "UTF-8">
 
 <style>
+@import url('https://fonts.googleapis.com/css?family=Lacquer|Hi+Melody|Inconsolata&display=swap');
+
+h4 {
+  font-size: 1em;
+  display: flex;
+  justify-content: center;
+  margin: 1em;
+}
+
+html {
+  font-family: "Inconsolata";
+  display: flex;
+  justify-content: center;
+}
+
 .button {
   padding: 0.5em;
   margin: 0.5em auto;
@@ -36,7 +51,7 @@
 }
 
 .bar {
-  background-color: #cce;
+  background-color: #ada;
   display: flex;
   justify-content: center;
   padding: 0.1em;
@@ -47,67 +62,54 @@
   justify-content: center;
 }
 
-h4 {
-  font-size: 1em;
-  display: flex;
-  justify-content: center;
-  margin: 1em;
-}
-
 </style>
 
 <script src="C:/Users/Jim/Desktop/DataScience/cubicinfinity.github.io/modulus.js"></script>
 <body>
-<p> Description of this page </p>
+<p class="center"> This applet calulates floating point division in any base and displays the modulus pattern of remainders. "R>" indicates the start of a repeating sequence of digits. (I will be adding a visualization of the modulus pattern.)</p>
 
 <div class="fields">
   <div class="section">
     <h4> Values </h4>
     <div class="entry">
-      <label> Numerator <input type="number" id="numerator"></label>
+      <label> Numerator <input type="number" id="numerator" /></label>
     </div>
     <div class="entry">
-      <label> Denominator <input type="number" id="denominator"></label>
+      <label> Denominator <input type="number" id="denominator" /></label>
     </div>
     <div class="entry">
-      <label> Base of expression <input type="number" id="base" value=10></label>
+      <label> Base of expression <input type="number" id="base" value=10 /></label>
     </div>
     <div class="entry">
       <label>
-        <input type="checkbox" id="limitPrecision" checked> 
+        <input type="checkbox" id="limitPrecision" onclick="checkField('limitPrecision', 'precision');" checked /> 
         Max precision 
-        <input type="number" id="precision" value=50>
+        <input type="number" id="precision" value=50 />
       </label>
     </div>
-    <div class="entry">
-      <label>
-        <input type="checkbox" id="repeatOnly"> 
-        Hide non-repeating digits
-      </label>
-	</div>
 	<div class="entry">
-	  <label><input type="checkbox" id="modBase10" checked> Show modulation in base 10 </label>
+	  <label><input type="checkbox" id="modBase10" checked /> Show remainders in base 10 </label>
     </div>
-    <div class="button" onclick="compute()"> Compute </div>
+    <div class="button" onclick="compute();"> Compute </div>
   </div>
   <div class="section">
 	<h4> Appearance </h4>
 	<div class="entry">
-	  <label><input type="checkbox" id="showDigits" checked> Show digits </label>
+	  <label><input type="checkbox" id="showDigits" checked /> Show digits </label>
 	</div>
 	<div class="entry">
-	  <label><input type="checkbox" id="directional" checked> Directional lines </label>
+	  <label><input type="checkbox" id="directional" checked /> Directional lines </label>
 	</div>
 	<div class="entry">
-	  <label> Initial line color (HTML) <input type="text" id="lineColor1" value="#ff000088"></label>
+	  <label> Initial line color (HTML) <input type="text" id="lineColor1" value="#ff000088" /></label>
 	</div>
 	<div class="entry">
-	  <label> Repeating line color (HTML) <input type="text" id="lineColor2" value="red"></label>
+	  <label> Repeating line color (HTML) <input type="text" id="lineColor2" value="red" /></label>
 	</div>
 	<div class="entry">
-	  <label> Background color (HTML) <input type="text" id="backgroundColor" value="black"></label>
+	  <label> Background color (HTML) <input type="text" id="backgroundColor" value="black" /></label>
 	</div>
-    <div class="button" onclick="format()"> Update </div>
+    <div class="button" onclick="format();"> Update </div>
   </div>
 </div>
 
@@ -119,6 +121,11 @@ h4 {
 <div>
 <h4> Remainders </h4>
 <p id="modulationBar" class="bar"> Not computed </p>
+</div>
+
+<div>
+<h5 id="debug">  </h5>
+<p id="debugOutput">  </p>
 </div>
 
 </body>
