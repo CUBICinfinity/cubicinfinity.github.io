@@ -1,16 +1,16 @@
 /*
 Required TODO:
-Fix visualization for cases like 1/27 base 9
 Sanitize inputs
 */
 
 /*
 Want TODO:
-Draw loops on repeated digit.
+Add directional feature. Use a gradient instead of arrows. It will look better.
 */
 
 /*
 Optional TODO:
+Draw loops on repeated digit.
 Make including zero in the circle an option
 Expand supported values, for example, base 1
 Add support for decimal points in inputs.
@@ -227,7 +227,11 @@ compute = function() {
     }
   }
   remainders = values.slice(i).map(function(row){return row[1]});
-  repeatStart = matchIndex + numB.length - i;
+  if (matchIndex === null) {
+    repeatStart = null;
+  } else {
+    repeatStart = matchIndex + numB.length - i;
+  }
 
   // -- Displays --
 
@@ -373,7 +377,7 @@ draw = function() {
       Math.PI / 2 - 2 * Math.PI * Math.floor(den / 2) / den));
   }
   if (den > 500) {
-    var squishFactor = 17 / 36 + den / (den ** (1 + 1 / (0.8 * Math.sqrt(den))) * 36);
+    var squishFactor = 17 / 36 + den / (den ** (1 + 1 / (0.5 * Math.sqrt(den))) * 36);
   } else if (den > 62) {
     var squishFactor = 10 / 22 + den / (den ** (1 + 80 / den) * 22);
   } else if (den > 7) {
@@ -426,27 +430,34 @@ draw = function() {
     ctx.lineWidth = radius / 3;
     ctx.lineCap = "round";
     // Draw initial lines
+    if (repeatStart === null) {
+      var stopping = remainders.length - 1;
+    } else {
+      var stopping = repeatStart;
+    }
     if (document.getElementById("enableLine1").checked == true) {
       ctx.strokeStyle = document.getElementById("lineColor1").value;
       ctx.beginPath();
       ctx.moveTo(points[remainders[0]][0], points[remainders[0]][1]);
-      for (i = 1; i <= repeatStart; i++) {
+      for (i = 1; i <= stopping; i++) {
         ctx.lineTo(points[remainders[i]][0], points[remainders[i]][1]);
       }
       ctx.stroke();
     }
-
-    // Draw repeating lines
-    ctx.strokeStyle = document.getElementById("lineColor2").value;
-    ctx.beginPath();
-    ctx.moveTo(points[remainders[repeatStart]][0], 
-               points[remainders[repeatStart]][1]);
-    for (i = repeatStart; i < remainders.length; i++) {
-      ctx.lineTo(points[remainders[i]][0], points[remainders[i]][1]);
+    
+    if (repeatStart !== null) {
+      // Draw repeating lines
+      ctx.strokeStyle = document.getElementById("lineColor2").value;
+      ctx.beginPath();
+      ctx.moveTo(points[remainders[repeatStart]][0], 
+                 points[remainders[repeatStart]][1]);
+      for (i = repeatStart; i < remainders.length; i++) {
+        ctx.lineTo(points[remainders[i]][0], points[remainders[i]][1]);
+      }
+      ctx.lineTo(points[remainders[repeatStart]][0], 
+                 points[remainders[repeatStart]][1]);
+      ctx.stroke();
     }
-    ctx.lineTo(points[remainders[repeatStart]][0], 
-               points[remainders[repeatStart]][1]);
-    ctx.stroke();
   }
   
   // Draw digits
@@ -474,5 +485,5 @@ draw = function() {
   }
 
 
-  //document.getElementById("debugOutput").innerHTML = disp;
+  //document.getElementById("debugOutput").innerHTML = repeatStart + " & " + remainders;
 }
