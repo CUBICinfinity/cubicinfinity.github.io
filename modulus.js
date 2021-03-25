@@ -1,12 +1,30 @@
-/* Possible TODO:
+/*
+Required TODO:
+Fix visualization for cases like 1/27 base 9
+Sanitize inputs
+*/
+
+/*
+Want TODO:
+Draw loops on repeated digit.
+*/
+
+/*
+Optional TODO:
+Make including zero in the circle an option
+Expand supported values, for example, base 1
 Add support for decimal points in inputs.
 Identify earlier repeat point for graphing purposes only.
 */ 
 
+// Next time I work on a large JS project I should use OOP.
+var remainders = [];
+var repeatStart = 0;
+
 // Compare the values of two length 2 arrays
 valueMatch = function(a1, a2) {
   if (a1[0] == a2[0] & a1[1] == a2[1]) {
-    return true; 
+    return true;
   } else {
     return false;
   }
@@ -41,24 +59,51 @@ convertToBase = function(value, base) {
 
 // Validate and modify form values
 validate = function() {
-  // With number input type this currently never returns false.
+  // With type="number" no known NaN values exist, but the check is
+  // still performed.
   var valid = true;
-  if (isNaN(document.getElementById("numerator").value)) {
+  var guarantee = true;
+
+  var num = document.getElementById("numerator").value;
+  if (isNaN(num) || num == 0) {
     valid = false;
     document.getElementById("numerator").style.borderColor = "red";
+  } else if (num < 0) {
+    guarantee = false;
+    document.getElementById("numerator").style.borderColor = "yellow";
+  } else {
+    document.getElementById("numerator").style.removeProperty('border');
   }
-  if (isNaN(document.getElementById("denominator").value)) {
+
+  var den = document.getElementById("denominator").value;
+  if (isNaN(den) || den == 0) {
     valid = false;
     document.getElementById("denominator").style.borderColor = "red";
+  } else if (den < 0) {
+    guarantee = false;
+    document.getElementById("denominator").style.borderColor = "yellow";
+  } else {
+    document.getElementById("denominator").style.removeProperty('border');
   }
-  if (isNaN(document.getElementById("base").value)) {
+
+  var base = document.getElementById("base").value;
+  if (isNaN(base) || (base < 2 & base > -2)) {
     valid = false;
     document.getElementById("base").style.borderColor = "red";
+  } else if (base < -1) {
+    document.getElementById("base").style.borderColor = "yellow";
+    guarantee = false;
+  } else {
+    document.getElementById("base").style.removeProperty('border');
   }
-  if (document.getElementById("limitPrecision").checked == true &
-      isNaN(document.getElementById("precision").value)) {
+
+  var precision = document.getElementById("precision").value;
+  var limitPrecision = document.getElementById("limitPrecision").checked;
+  if (limitPrecision == true & isNaN(precision)) {
     valid = false;
     document.getElementById("precision").style.borderColor = "red";
+  } else {
+    document.getElementById("precision").style.removeProperty('border');
   }
 
   // Round values
@@ -71,7 +116,7 @@ validate = function() {
   document.getElementById("precision").value = 
     Math.round(document.getElementById("precision").value);
 
-  return valid;
+  return [valid, guarantee];
 }
 
 // Generalized function to enable/disable a field using a checkbox
@@ -85,10 +130,23 @@ checkField = function(checkId, fieldId, checkToEnable = true) {
   }
 }
 
+// Generalized function to show/hide an element using a checkbox
+showHideElement = function(checkId, elementId, checkToShow = true, 
+                           showType = "block") {
+  if (document.getElementById(checkId).checked == checkToShow) {
+    // activate field
+    document.getElementById(elementId).style.display = showType;
+  } else {
+    // deactivate field
+    document.getElementById(elementId).style.display = "none";
+  }
+}
+
 // onclick "Compute"
 compute = function() {
   // Enforces only integers. I may provide support for floats later.
-  if (validate() == false) {
+  var valid = validate();
+  if (valid[0] == false) {
     return
   }
   
@@ -158,27 +216,64 @@ compute = function() {
         ("[" + convertToBase(values[i][1], base) + "]").replaceAll(",", " ");
     }
   }
+ 
+ // These lines were added later to assign values for the plot.
+  var i = 0;
+  while (i < values.length & i < numB.length - 1) {
+    if (values[i][0] == 0) {
+      i++;
+    } else {
+      break;
+    }
+  }
+  remainders = values.slice(i).map(function(row){return row[1]});
+  repeatStart = matchIndex + numB.length - i;
 
   // -- Displays --
 
   // Details message
-  computeMessage = num + "/" + den + " appears as [" + numB + "]/[" + denB + 
+  var computeMessage = "";
+  if (valid[1] == false) {
+    computeMessage += 
+      "Warning: Untested/unsupported values used. Results are not guaranteed.</br></br>";
+  }
+  computeMessage += num + "/" + den + " appears as [" + numB + "]/[" + denB + 
     "] in base " + base + ".";
   computeMessage = computeMessage.replaceAll(",", " ");
   if (exactAnswer == false) {
     computeMessage += 
-      "</br></br>Warning: The results have been truncated by maxPrecision.";
+      "</br></br>The results have been truncated by \"Max precision\".";
   }
   document.getElementById("computeMessage").innerHTML = computeMessage;
+
+  var alignValues = document.getElementById("alignValues").checked;
 
   // Format results
   var qString = "";
   var mString = "";
-  valueStart = false;
+  var valueStart = false;
+  
+  pad = function() {
+    if (alignValues == true) {
+      var spacing = String(values[i][1]).length - String(values[i][0]).length;
+      if (spacing > 0) {
+        qString += "&nbsp;".repeat(spacing);
+      } else if (spacing < 0) {
+        mString += "&nbsp;".repeat(-spacing);
+      }
+    }
+  }
+
+  if (alignValues == true) {
+    qString += "<b>Quotient: &nbsp;&nbsp;</b>";
+    mString += "<b>Remainders: </b>";
+  }
+
   for (i = 0; i < values.length; i++) {
     if (i == numB.length) {
       if (qString.length == 0) {
         qString += "0 ";
+        mString += values[i-1][1] + " ";
       }
       qString += ". ";
       mString += "| ";
@@ -192,24 +287,41 @@ compute = function() {
       valueStart = true;
     }
     if (valueStart == true) {
+      pad();
       qString += values[i][0] + " ";
       mString += values[i][1] + " ";
     }
   }
-
+  /*
   // Update results bars
   document.getElementById("quotientBar").innerHTML = qString;
   document.getElementById("modulationBar").innerHTML = mString;
+  */
+  ///*
+  if (alignValues == true) {
+    document.getElementById("resultAligned").style.display = "block";
+    document.getElementById("resultBars").style.display = "none";
+    document.getElementById("resultAligned").innerHTML = 
+      "The \"Align values\" feature is still in development.</br>" + 
+      qString + "</br>" + mString;
+  } else {
+    document.getElementById("resultAligned").style.display = "none";
+    document.getElementById("resultBars").style.display = "block";
+    // Update results bars
+    document.getElementById("quotientBar").innerHTML = qString;
+    document.getElementById("modulationBar").innerHTML = mString;
+  }
+  //*/
 
   // Show debug info
-  debug = false;
+  var debug = false;
   if (debug == true) {
     document.getElementById("debug").innerHTML = "Debug info"
     debugDiv = "";
     debugMod = "";
     for (value of values) {
       // This spacing could be made a feature for displaying the normal results.
-      spacing = String(value[1]).length - String(value[0]).length;
+      var spacing = String(value[1]).length - String(value[0]).length;
       if (spacing > 0) {
         debugDiv += "&nbsp;".repeat(spacing);
       } else if (spacing < 0) {
@@ -219,6 +331,148 @@ compute = function() {
       debugMod += value[1] + " ";
     }
     document.getElementById("debugOutput").innerHTML = debugDiv + "</br>" + 
-      debugMod + "</br> matchIndex = " + matchIndex;
+      debugMod + "</br> matchIndex = " + matchIndex +
+      "</br> remainders = " + remainders +
+      "</br> repeatStart = " + repeatStart;
   }
+
+  // Update plot
+  if (document.getElementById("includePlot").checked == true) {
+    draw();
+  }
+}
+
+function drawFilledCircle(ctx, x, y, radius){
+    ctx.beginPath();
+    ctx.arc(x, y, radius, 0, 2 * Math.PI);
+    ctx.fill();
+}
+
+// onclick Update
+draw = function() {
+  var plot = document.getElementById("plot");
+  var ctx = plot.getContext("2d");
+  var res = document.getElementById("resolution").value;
+  var den = Math.abs(document.getElementById("denominator").value);
+ 
+  plot.width = String(res);
+  plot.height = String(res);
+
+  ctx.fillStyle = document.getElementById("backgroundColor").value;
+  ctx.fillRect(0, 0, res, res);
+
+  // Determine coordinates
+  var points = [];
+  var displace = true;
+  if (den % 2 == 0 & displace == true) {
+    var disp = 0;
+  } else if (den == 1) {
+    var disp = 5 / 12 * res;
+  } else {
+    var disp = 5 / 24 * res * (1 + Math.sin(
+      Math.PI / 2 - 2 * Math.PI * Math.floor(den / 2) / den));
+  }
+  if (den > 500) {
+    var squishFactor = 17 / 36 + den / (den ** (1 + 1 / (0.8 * Math.sqrt(den))) * 36);
+  } else if (den > 62) {
+    var squishFactor = 10 / 22 + den / (den ** (1 + 80 / den) * 22);
+  } else if (den > 7) {
+    var squishFactor = 5 / 12 + den / (den ** (1 + 10 / den) * 12);
+  } else {
+    var squishFactor = 5 / 12;
+  }
+  if (document.getElementById("showDigits").checked == true) {
+    // Determine font size. fSize is also called when filling text.
+    if (den > 4) {
+      var fSize = Math.sqrt(res / den / 60) * 30;
+    } else {
+      var fSize = den * (res / den) / 15;
+    }
+    if (den > 99) {
+      var pvDisplacement = Math.log10(den / 20) * fSize / 3;
+    } else {
+      var pvDisplacement = 0;
+    }
+  } else {
+    var pvDisplacement = 0;
+  }
+  for (i = 0; i < den; i++) {
+    var x = res / 2 + squishFactor * res * 
+      Math.cos(Math.PI / 2 - (i / den) * Math.PI * 2);
+    var y = disp + res / 2 - squishFactor * res * 
+      Math.sin(Math.PI / 2 - (i / den) * Math.PI * 2);
+    points[i] = [x + pvDisplacement, y];
+  }
+
+  // Draw points
+  if (den < 11) {
+    var radius = 10 * Math.sqrt(10 / den) * (res / 600);
+  } else {
+    var radius = 10 * (10 / den) * (res / 600);
+  }
+  ctx.fillStyle = document.getElementById("pointColor").value;
+  for (i = 0; i < points.length; i++) {
+    ctx.beginPath();
+    ctx.arc(points[i][0], points[i][1], radius, 0, 2 * Math.PI);
+    ctx.fill();
+  }
+
+  // TODO: 
+  // In order to support dirrectional (arrow) lines, I might 
+  // draw on a hidden canvas, then layer the image with correct 
+  // transparency.
+  
+  if (den != 1) {
+    ctx.lineWidth = radius / 3;
+    ctx.lineCap = "round";
+    // Draw initial lines
+    if (document.getElementById("enableLine1").checked == true) {
+      ctx.strokeStyle = document.getElementById("lineColor1").value;
+      ctx.beginPath();
+      ctx.moveTo(points[remainders[0]][0], points[remainders[0]][1]);
+      for (i = 1; i <= repeatStart; i++) {
+        ctx.lineTo(points[remainders[i]][0], points[remainders[i]][1]);
+      }
+      ctx.stroke();
+    }
+
+    // Draw repeating lines
+    ctx.strokeStyle = document.getElementById("lineColor2").value;
+    ctx.beginPath();
+    ctx.moveTo(points[remainders[repeatStart]][0], 
+               points[remainders[repeatStart]][1]);
+    for (i = repeatStart; i < remainders.length; i++) {
+      ctx.lineTo(points[remainders[i]][0], points[remainders[i]][1]);
+    }
+    ctx.lineTo(points[remainders[repeatStart]][0], 
+               points[remainders[repeatStart]][1]);
+    ctx.stroke();
+  }
+  
+  // Draw digits
+  if (document.getElementById("showDigits").checked == true) {
+    ctx.fillStyle = document.getElementById("digitsColor").value;
+    ctx.font = fSize + "px Inconsolata";
+    if (den == 1) {
+      ctx.fillText(0, res / 2 - fSize / 3, res / 2 - 2 / 3 * fSize - radius);
+    } else {
+      if (den > 500) {
+        var squishFactor = 17 / 36 + den / (den ** (1 + 1 / Math.sqrt(den)) * 36);
+      } else if (den > 35) {
+        var squishFactor = 17 / 36 + den / (den ** 1.3 * 36);
+      } else {
+        var squishFactor = (17 / 36 + den / (den ** (1 + 6 / den) * 36));
+      }
+      for (i = 0; i < den; i++) {
+        var x = res / 2 + squishFactor * res * 
+          Math.cos(Math.PI / 2 - (i / den) * Math.PI * 2);
+        var y = disp + res / 2 - squishFactor * res * 
+          Math.sin(Math.PI / 2 - (i / den) * Math.PI * 2);
+        ctx.fillText(i, x - fSize / 3 , y + fSize / 3);
+      }
+    }
+  }
+
+
+  //document.getElementById("debugOutput").innerHTML = disp;
 }

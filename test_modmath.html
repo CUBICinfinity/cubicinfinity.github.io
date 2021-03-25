@@ -42,6 +42,10 @@ html {
 
 .section {
   margin: 1em;
+  display: block;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
 }
 
 .entry {
@@ -52,9 +56,14 @@ html {
 
 .bar {
   background-color: #ada;
-  display: flex;
-  justify-content: center;
+  display: block;
+  text-align: center;
   padding: 0.1em;
+  min-width: 100%;
+}
+
+.plot {
+  margin-bottom: 2em;
 }
 
 .center {
@@ -65,11 +74,17 @@ html {
 </style>
 
 <script src="C:/Users/Jim/Desktop/DataScience/cubicinfinity.github.io/modulus.js"></script>
+<noscript><b> Enable JavaScript to use this page. </b></noscript>
 <body>
-<p class="center"> This applet calulates floating point division in any base and displays the modulus pattern of remainders. "R>" indicates the start of a repeating sequence of digits. (I will be adding a visualization of the modulus pattern.)</p>
+
+<p class="center">
+  This applet calulates floating point division in any base and displays the 
+  modulus pattern of remainders. </br>
+  "R>" indicates the start of a repeating sequence of digits.
+</p>
 
 <div class="fields">
-  <div class="section">
+  <div class="section" id="valueSettings">
     <h4> Values </h4>
     <div class="entry">
       <label> Numerator <input type="number" id="numerator" /></label>
@@ -82,50 +97,103 @@ html {
     </div>
     <div class="entry">
       <label>
-        <input type="checkbox" id="limitPrecision" onclick="checkField('limitPrecision', 'precision');" checked /> 
-        Max precision 
+        <input type="checkbox" id="limitPrecision" 
+           onclick="checkField('limitPrecision', 'precision');" checked /> 
+          Max precision 
         <input type="number" id="precision" value=50 />
       </label>
     </div>
 	<div class="entry">
 	  <label><input type="checkbox" id="modBase10" checked /> Show remainders in base 10 </label>
     </div>
+	<div class="entry">
+	  <label><input type="checkbox" id="alignValues" unchecked /> Align values </label>
+    </div>
+	<div class="entry">
+	  <label><input type="checkbox" id="includePlot" 
+	  	onclick="showHideElement('includePlot', 'plotSettings', true, showType = 'flex');
+	  	         showHideElement('includePlot', 'plot');" checked /> Generate graph </label>
+    </div>
     <div class="button" onclick="compute();"> Compute </div>
   </div>
-  <div class="section">
+
+  <div class="section" id="plotSettings">
 	<h4> Appearance </h4>
 	<div class="entry">
-	  <label><input type="checkbox" id="showDigits" checked /> Show digits </label>
+	  <label> 
+	  	<input type="checkbox" id="showDigits" 
+	  	    onclick="checkField('showDigits', 'digitsColor');" checked />
+	  	  Digit color
+	  	<input type="text" id="digitsColor" value="white" /></label>
 	</div>
 	<div class="entry">
-	  <label><input type="checkbox" id="directional" checked /> Directional lines </label>
+	  <label>
+	  	<input type="checkbox" id="directional" unchecked disabled/> 
+	    Directional lines (Support pending) 
+	  </label>
 	</div>
 	<div class="entry">
-	  <label> Initial line color (HTML) <input type="text" id="lineColor1" value="#ff000088" /></label>
+	  <label> 
+	  	<input type="checkbox" id="enableBackground" 
+	  	    onclick="checkField('enableBackground', 'backgroundColor');" checked />
+	  	  Background color
+	  	<input type="text" id="backgroundColor" value="black" /></label>
 	</div>
 	<div class="entry">
-	  <label> Repeating line color (HTML) <input type="text" id="lineColor2" value="red" /></label>
+	  <label>
+	  	<input type="checkbox" id="enablePoints" 
+	  	    onclick="checkField('enablePoints', 'pointColor');" checked /> 
+	  	  Point color 
+	  	<input type="text" id="pointColor" value="#990000" />
+	  </label>
 	</div>
 	<div class="entry">
-	  <label> Background color (HTML) <input type="text" id="backgroundColor" value="black" /></label>
+	  <label>
+	  <input type="checkbox" id="enableLine1" 
+	  	  onclick="checkField('enableLine1', 'lineColor1');" checked />
+	  	Initial line color <input type="text" id="lineColor1" value="#ff880088" /></label>
 	</div>
-    <div class="button" onclick="format();"> Update </div>
+	<div class="entry">
+	  <label> Repeating line color <input type="text" id="lineColor2" value="red" /></label>
+	</div>
+	<div class="entry">
+	  <label> Resolution <input type="number" id="resolution" value=600 /></label>
+	</div>
+    <div class="button" onclick="draw();"> Update </div>
   </div>
 </div>
 
 <p id="computeMessage" class="center"></p>
-<div>
-<h4> Quotient </h4>
-<p id="quotientBar" class="bar"> Not computed </p>
+
+<div id="resultBars" style="display:block">
+  <div>
+    <h4> Quotient </h4>
+    <p id="quotientBar" class="bar"> Not computed </p>
+  </div>
+  <div>
+    <h4> Remainders </h4>
+    <p id="modulationBar" class="bar"> Not computed </p>
+  </div>
 </div>
-<div>
-<h4> Remainders </h4>
-<p id="modulationBar" class="bar"> Not computed </p>
+
+<div id="resultAligned" style="display:none">
+  
 </div>
 
 <div>
-<h5 id="debug">  </h5>
-<p id="debugOutput">  </p>
+  <h5 id="debug">  </h5>
+  <p id="debugOutput">  </p>
+</div>
+
+<div class="center">
+  <canvas class="plot" id="plot" width="600" height="600" 
+  style="background-color: black;">
+    <script> 
+      // I don't know if this message works, if you use IE 8, please let me know.
+      document.getElementById("plot").innerHTML = 
+        "Update to Internet Explorer 9 lol";
+    </script>
+  </canvas>
 </div>
 
 </body>
