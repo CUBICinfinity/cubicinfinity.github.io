@@ -1,11 +1,8 @@
 /*
-Required TODO:
-Sanitize inputs
-*/
-
-/*
-Want TODO:
+TODO:
 Add directional feature. Use a gradient instead of arrows. It will look better.
+Improve printing with align results
+Sanitize inputs
 */
 
 /*
@@ -209,11 +206,12 @@ compute = function() {
     }
   }
 
-  // Convert if Not show remainders in base 10
+  // Convert if Not show remainders in base 
+  var rPrint = values.map(function(row){return row[1]});
   if (modBase10 == false) {
-    for (i = 0; i < values.length; i++) {
-      values[i][1] = 
-        ("[" + convertToBase(values[i][1], base) + "]").replaceAll(",", " ");
+    for (i = 0; i < rPrint.length; i++) {
+      rPrint[i] = 
+        ("[" + convertToBase(rPrint[i], base) + "]").replaceAll(",", " ");
     }
   }
  
@@ -257,9 +255,11 @@ compute = function() {
   var mString = "";
   var valueStart = false;
   
+  var valuesSource = 
+
   pad = function() {
     if (alignValues == true) {
-      var spacing = String(values[i][1]).length - String(values[i][0]).length;
+      var spacing = String(rPrint[i]).length - String(values[i][0]).length;
       if (spacing > 0) {
         qString += "&nbsp;".repeat(spacing);
       } else if (spacing < 0) {
@@ -277,7 +277,7 @@ compute = function() {
     if (i == numB.length) {
       if (qString.length == 0) {
         qString += "0 ";
-        mString += values[i-1][1] + " ";
+        mString += rPrint[i-1] + " ";
       }
       qString += ". ";
       mString += "| ";
@@ -293,7 +293,7 @@ compute = function() {
     if (valueStart == true) {
       pad();
       qString += values[i][0] + " ";
-      mString += values[i][1] + " ";
+      mString += rPrint[i] + " ";
     }
   }
   /*
@@ -306,7 +306,7 @@ compute = function() {
     document.getElementById("resultAligned").style.display = "block";
     document.getElementById("resultBars").style.display = "none";
     document.getElementById("resultAligned").innerHTML = 
-      "The \"Align values\" feature is still in development.</br>" + 
+      "The \"Align values\" feature is not fully developed.</br>" + 
       qString + "</br>" + mString;
   } else {
     document.getElementById("resultAligned").style.display = "none";
@@ -344,12 +344,6 @@ compute = function() {
   if (document.getElementById("includePlot").checked == true) {
     draw();
   }
-}
-
-function drawFilledCircle(ctx, x, y, radius){
-    ctx.beginPath();
-    ctx.arc(x, y, radius, 0, 2 * Math.PI);
-    ctx.fill();
 }
 
 // onclick Update
