@@ -1,18 +1,17 @@
 /*
 TODO:
-Add directional feature. Use a gradient instead of arrows. It will look better.
 Improve printing with align results
-Sanitize inputs
 */
 
 /*
 Optional TODO:
 Draw loops on repeated digit.
+Sanitize inputs (good practice for when it matters)
 Make including zero in the circle an option
 Expand supported values, for example, base 1
 Add support for decimal points in inputs.
 Identify earlier repeat point for graphing purposes only.
-*/ 
+*/
 
 // Next time I work on a large JS project I should use OOP.
 var remainders = [];
@@ -116,9 +115,20 @@ validate = function() {
   return [valid, guarantee];
 }
 
-// Generalized function to enable/disable a field using a checkbox
-checkField = function(checkId, fieldId, checkToEnable = true) {
-  if (document.getElementById(checkId).checked == checkToEnable) {
+// Generalized function to enable/disable a field using one or more checkboxes
+// (That "one or more" feature was added later.)
+checkField = function(checkIds, fieldId, checkToEnable = true) {
+  if (typeof(checkIds) != "object") {
+    checkIds = [checkIds];
+  }
+  var allChecked = true;
+  for (id of checkIds) {
+    if (document.getElementById(id).checked == false) {
+      allChecked = false;
+      break;
+    }
+  }
+  if (allChecked == checkToEnable) {
     // activate field
     document.getElementById(fieldId).disabled = false;
   } else {
@@ -296,12 +306,7 @@ compute = function() {
       mString += rPrint[i] + " ";
     }
   }
-  /*
-  // Update results bars
-  document.getElementById("quotientBar").innerHTML = qString;
-  document.getElementById("modulationBar").innerHTML = mString;
-  */
-  ///*
+
   if (alignValues == true) {
     document.getElementById("resultAligned").style.display = "block";
     document.getElementById("resultBars").style.display = "none";
@@ -315,7 +320,6 @@ compute = function() {
     document.getElementById("quotientBar").innerHTML = qString;
     document.getElementById("modulationBar").innerHTML = mString;
   }
-  //*/
 
   // Show debug info
   var debug = false;
@@ -324,7 +328,6 @@ compute = function() {
     debugDiv = "";
     debugMod = "";
     for (value of values) {
-      // This spacing could be made a feature for displaying the normal results.
       var spacing = String(value[1]).length - String(value[0]).length;
       if (spacing > 0) {
         debugDiv += "&nbsp;".repeat(spacing);
@@ -346,6 +349,17 @@ compute = function() {
   }
 }
 
+drawGradientLine = function(context, start, stop, color1, color2) {
+  var grd = context.createLinearGradient(start[0], start[1], stop[0], stop[1]);
+  grd.addColorStop(0, color1);
+  grd.addColorStop(1, color2);
+  context.strokeStyle = grd;
+  context.beginPath();
+  context.moveTo(start[0], start[1]);
+  context.lineTo(stop[0], stop[1]);
+  context.stroke();
+}
+
 // onclick Update
 draw = function() {
   var plot = document.getElementById("plot");
@@ -355,9 +369,14 @@ draw = function() {
  
   plot.width = String(res);
   plot.height = String(res);
-
-  ctx.fillStyle = document.getElementById("backgroundColor").value;
-  ctx.fillRect(0, 0, res, res);
+  
+  // Draw background
+  var backgroundColor = document.getElementById("backgroundColor").value;
+  if (backgroundColor != "" & 
+      document.getElementById("enableBackground").checked == true) {
+    ctx.fillStyle = backgroundColor;
+    ctx.fillRect(0, 0, res, res);
+  }
 
   // Determine coordinates
   var points = [];
@@ -402,23 +421,24 @@ draw = function() {
     points[i] = [x + pvDisplacement, y];
   }
 
-  // Draw points
+  // Determine thickness (point size)
   if (den < 11) {
     var radius = 10 * Math.sqrt(10 / den) * (res / 600);
   } else {
     var radius = 10 * (10 / den) * (res / 600);
   }
-  ctx.fillStyle = document.getElementById("pointColor").value;
-  for (i = 0; i < points.length; i++) {
-    ctx.beginPath();
-    ctx.arc(points[i][0], points[i][1], radius, 0, 2 * Math.PI);
-    ctx.fill();
-  }
 
-  // TODO: 
-  // In order to support dirrectional (arrow) lines, I might 
-  // draw on a hidden canvas, then layer the image with correct 
-  // transparency.
+  // Draw points
+  var pointColor = document.getElementById("pointColor").value;
+  if (pointColor != "" & 
+      document.getElementById("enablePoints").checked == true) {
+    ctx.fillStyle = pointColor;
+    for (i = 0; i < points.length; i++) {
+      ctx.beginPath();
+      ctx.arc(points[i][0], points[i][1], radius, 0, 2 * Math.PI);
+      ctx.fill();
+    }
+  }
   
   if (den != 1) {
     ctx.lineWidth = radius / 3;
@@ -429,29 +449,123 @@ draw = function() {
     } else {
       var stopping = repeatStart;
     }
-    if (document.getElementById("enableLine1").checked == true) {
+    try {
       ctx.strokeStyle = document.getElementById("lineColor1").value;
-      ctx.beginPath();
-      ctx.moveTo(points[remainders[0]][0], points[remainders[0]][1]);
-      for (i = 1; i <= stopping; i++) {
-        ctx.lineTo(points[remainders[i]][0], points[remainders[i]][1]);
+      if (document.getElementById("enableLine1").checked == true) {
+        var color1 = document.getElementById("lineColor1").value;
+        var badGradient = false;
+        try {
+          ctx.strokeStyle = document.getElementById("gradientColor1").value;
+        }
+        catch {
+          badGradient = true;
+        }
+        if (document.getElementById("enableGradient1").checked == true & 
+          stopping > 0 & badGradient == false) {
+          // Using gradients
+          var color2 = document.getElementById("gradientColor1").value;
+          for (i = 0; i < stopping; i++) {
+            drawGradientLine(
+              ctx, 
+              points[remainders[i]], 
+              points[remainders[i + 1]], 
+              color1, 
+              color2);
+            /*
+            var grd = ctx.createLinearGradient(
+              points[remainders[i]][0], 
+              points[remainders[i]][1],
+              points[remainders[i + 1]][0], 
+              points[remainders[i + 1]][1]);
+            grd.addColorStop(0, color1);
+            grd.addColorStop(1, color2);
+            ctx.strokeStyle = grd;
+            ctx.beginPath();
+            ctx.moveTo(
+              points[remainders[i]][0], 
+              points[remainders[i]][1]);
+            ctx.lineTo(
+              points[remainders[i + 1]][0], 
+              points[remainders[i + 1]][1]);
+            ctx.stroke();
+            */
+          }
+        } else {
+          // Not using gradients
+          ctx.strokeStyle = color1;
+          ctx.beginPath();
+          ctx.moveTo(points[remainders[0]][0], points[remainders[0]][1]);
+          for (i = 1; i <= stopping; i++) {
+            ctx.lineTo(points[remainders[i]][0], points[remainders[i]][1]);
+          }
+          ctx.stroke();
+        }
       }
-      ctx.stroke();
     }
+    catch {} // Do nothing. Skipped initial line
     
-    if (repeatStart !== null) {
-      // Draw repeating lines
+    try {
       ctx.strokeStyle = document.getElementById("lineColor2").value;
-      ctx.beginPath();
-      ctx.moveTo(points[remainders[repeatStart]][0], 
-                 points[remainders[repeatStart]][1]);
-      for (i = repeatStart; i < remainders.length; i++) {
-        ctx.lineTo(points[remainders[i]][0], points[remainders[i]][1]);
+      if (repeatStart !== null) {
+        // Draw repeating lines
+        var color1 = document.getElementById("lineColor2").value;
+        var badGradient = false;
+        try {
+          ctx.strokeStyle = document.getElementById("gradientColor2").value;
+        }
+        catch {
+          badGradient = true;
+        }
+        if (document.getElementById("enableGradient2").checked == true & 
+            remainders.length > 1 & badGradient == false) {
+          // Using gradients
+          var color2 = document.getElementById("gradientColor2").value;
+          for (i = repeatStart; i < remainders.length - 1; i++) {
+            var grd = ctx.createLinearGradient(
+              points[remainders[i]][0], 
+              points[remainders[i]][1],
+              points[remainders[i + 1]][0], 
+              points[remainders[i + 1]][1]);
+            grd.addColorStop(0, color1);
+            grd.addColorStop(1, color2);
+            ctx.strokeStyle = grd;
+            ctx.beginPath();
+            ctx.moveTo(points[remainders[i]][0], points[remainders[i]][1]);
+            ctx.lineTo(points[remainders[i + 1]][0], points[remainders[i + 1]][1]);
+            ctx.stroke();
+          }
+          var grd = ctx.createLinearGradient(
+            points[remainders[remainders.length - 1]][0], 
+            points[remainders[remainders.length - 1]][1],
+            points[remainders[repeatStart]][0], 
+            points[remainders[repeatStart]][1]);
+          grd.addColorStop(0, color1);
+          grd.addColorStop(1, color2);
+          ctx.strokeStyle = grd;
+          ctx.beginPath();
+          ctx.moveTo(
+            points[remainders[remainders.length - 1]][0], 
+            points[remainders[remainders.length - 1]][1]);
+          ctx.lineTo(
+            points[remainders[repeatStart]][0], 
+            points[remainders[repeatStart]][1]);
+          ctx.stroke();
+        } else {
+          // Not using gradients
+          ctx.strokeStyle = color1;
+          ctx.beginPath();
+          ctx.moveTo(points[remainders[repeatStart]][0], 
+                     points[remainders[repeatStart]][1]);
+          for (i = repeatStart; i < remainders.length; i++) {
+            ctx.lineTo(points[remainders[i]][0], points[remainders[i]][1]);
+          }
+          ctx.lineTo(points[remainders[repeatStart]][0], 
+                     points[remainders[repeatStart]][1]);
+          ctx.stroke();
+        }
       }
-      ctx.lineTo(points[remainders[repeatStart]][0], 
-                 points[remainders[repeatStart]][1]);
-      ctx.stroke();
     }
+    catch {} // Do nothing. Skipped repeating lines
   }
   
   // Draw digits
@@ -477,7 +591,4 @@ draw = function() {
       }
     }
   }
-
-
-  //document.getElementById("debugOutput").innerHTML = repeatStart + " & " + remainders;
 }

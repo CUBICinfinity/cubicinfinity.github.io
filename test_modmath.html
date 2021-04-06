@@ -99,20 +99,23 @@ html {
       <label>
         <input type="checkbox" id="limitPrecision" 
            onclick="checkField('limitPrecision', 'precision');" checked /> 
-          Max precision 
+        Max precision 
         <input type="number" id="precision" value=50 />
       </label>
     </div>
-	<div class="entry">
-	  <label><input type="checkbox" id="modBase10" checked /> Show remainders in base 10 </label>
-    </div>
-	<div class="entry">
-	  <label><input type="checkbox" id="alignValues" unchecked /> Align values </label>
-    </div>
-	<div class="entry">
-	  <label><input type="checkbox" id="includePlot" 
-	  	onclick="showHideElement('includePlot', 'plotSettings', true, showType = 'flex');
-	  	         showHideElement('includePlot', 'plot');" checked /> Generate graph </label>
+  	<div class="entry">
+  	  <label><input type="checkbox" id="modBase10" checked /> Show remainders in base 10 </label>
+      </div>
+  	<div class="entry">
+  	  <label><input type="checkbox" id="alignValues" unchecked /> Align values </label>
+      </div>
+  	<div class="entry">
+  	  <label>
+        <input type="checkbox" id="includePlot" 
+    	  	onclick="showHideElement('includePlot', 'plotSettings', true, showType = 'flex');
+    	  	         showHideElement('includePlot', 'plot');" checked /> 
+        Generate graph 
+      </label>
     </div>
     <div class="button" onclick="compute();"> Compute </div>
   </div>
@@ -123,39 +126,62 @@ html {
 	  <label> 
 	  	<input type="checkbox" id="showDigits" 
 	  	    onclick="checkField('showDigits', 'digitsColor');" checked />
-	  	  Digit color
-	  	<input type="text" id="digitsColor" value="white" /></label>
-	</div>
-	<div class="entry">
-	  <label>
-	  	<input type="checkbox" id="directional" unchecked disabled/> 
-	    Directional lines (Support pending) 
-	  </label>
+	  	Digit color
+	  	<input type="text" id="digitsColor" value="white" />
+    </label>
 	</div>
 	<div class="entry">
 	  <label> 
 	  	<input type="checkbox" id="enableBackground" 
 	  	    onclick="checkField('enableBackground', 'backgroundColor');" checked />
-	  	  Background color
-	  	<input type="text" id="backgroundColor" value="black" /></label>
+	  	Background color
+	  	<input type="text" id="backgroundColor" value="black" />
+    </label>
 	</div>
 	<div class="entry">
 	  <label>
 	  	<input type="checkbox" id="enablePoints" 
-	  	    onclick="checkField('enablePoints', 'pointColor');" checked /> 
-	  	  Point color 
-	  	<input type="text" id="pointColor" value="#990000" />
+	  	  onclick="checkField('enablePoints', 'pointColor');" checked /> 
+	  	Point color 
+	  	<input type="text" id="pointColor" value="#800800" />
 	  </label>
 	</div>
 	<div class="entry">
 	  <label>
-	  <input type="checkbox" id="enableLine1" 
-	  	  onclick="checkField('enableLine1', 'lineColor1');" checked />
-	  	Initial line color <input type="text" id="lineColor1" value="#ff880088" /></label>
+  	  <input 
+        type="checkbox" 
+        id="enableLine1" 
+  	  	onclick="checkField('enableLine1', 'lineColor1');
+                 checkField('enableLine1', 'enableGradient1');
+                 checkField(['enableLine1', 'enableGradient1'], 'gradientColor1');"
+        checked />
+	  	Initial line color from
+      <input type="text" id="lineColor1" value="#1100ee88" />
+    </label>
 	</div>
+  <div class="entry">
+    <label>
+      <input type="checkbox" id="enableGradient1" 
+        onclick="checkField('enableGradient1', 'gradientColor1');" unchecked /> 
+      Initial line color to
+      <input type="text" id="gradientColor1" value="#bb00dd88" disabled />
+    </label>
+  </div>
 	<div class="entry">
-	  <label> Repeating line color <input type="text" id="lineColor2" value="red" /></label>
+    <label> 
+      <input type="checkbox" id="enableLine2" checked disabled />
+  	  Repeating line color from 
+      <input type="text" id="lineColor2" value="#cc00ff" />
+    </label>
 	</div>
+  <div class="entry">
+    <label>
+      <input type="checkbox" id="enableGradient2" 
+        onclick="checkField('enableGradient2', 'gradientColor2');" unchecked /> 
+      Repeating line color to
+      <input type="text" id="gradientColor2" value="#00ffff" disabled />
+    </label>
+  </div>
 	<div class="entry">
 	  <label> Resolution <input type="number" id="resolution" value=600 /></label>
 	</div>
@@ -186,8 +212,7 @@ html {
 </div>
 
 <div class="center">
-  <canvas class="plot" id="plot" width="600" height="600" 
-  style="background-color: black;">
+  <canvas class="plot" id="plot" width="600" height="600">
     <script> 
       // I don't know if this message works, if you use IE 8, please let me know.
       document.getElementById("plot").innerHTML = 
