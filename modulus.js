@@ -448,17 +448,6 @@ function draw() {
       Math.PI / 2 - 2 * Math.PI * Math.floor(den / 2) / den));
   }
   
-  var squishFactor = 0;
-  if (den > 500) {
-    squishFactor = 17 / 36 + den / (den ** (1 + 1 / (0.5 * Math.sqrt(den))) * 36);
-  } else if (den > 62) {
-    squishFactor = 10 / 22 + den / (den ** (1 + 80 / den) * 22);
-  } else if (den > 7) {
-    squishFactor = 5 / 12 + den / (den ** (1 + 10 / den) * 12);
-  } else {
-    squishFactor = 5 / 12;
-  }
-  
   var fSize;
   var pvDisplacement = 0; // "Place value displacement"
   if (document.getElementById("showDigits").checked == true) {
@@ -469,9 +458,20 @@ function draw() {
       fSize = den * (res / den) / 15;
     }
     if (den > 99) {
-      // Shift digits horizontally
+      // Shift circle of points to the right when digits are longer on the left.
       pvDisplacement = Math.log10(den / 20) * fSize / 3;
     }
+  }
+  
+  var squishFactor;
+  if (den > 500) {
+    squishFactor = 17 / 36 + den / (den ** (1 + 1 / (0.5 * Math.sqrt(den))) * 36);
+  } else if (den > 62) {
+    squishFactor = 10 / 22 + den / (den ** (1 + 80 / den) * 22);
+  } else if (den > 7) {
+    squishFactor = 5 / 12 + den / (den ** (1 + 10 / den) * 12);
+  } else {
+    squishFactor = 5 / 12;
   }
   
   var x;
@@ -484,7 +484,7 @@ function draw() {
     points[i] = [x + pvDisplacement, y];
   }
 
-  // Determine thickness (point size)
+  // Determine brush thickness (point size)
   var radius;
   if (den < 11) {
     radius = 10 * Math.sqrt(10 / den) * (res / 600);
@@ -505,6 +505,7 @@ function draw() {
   }
   
   // Draw digits
+  var digitSquishFactor = squishFactor;
   if (document.getElementById("showDigits").checked == true &&
       validateColor(ctx, document.getElementById("digitsColor").value) == 
       true) {
@@ -514,16 +515,16 @@ function draw() {
       ctx.fillText(0, res / 2 - fSize / 3, res / 2 - 2 / 3 * fSize - radius);
     } else {
       if (den > 500) {
-        squishFactor = 17 / 36 + den / (den ** (1 + 1 / Math.sqrt(den)) * 36);
+        digitSquishFactor = 17 / 36 + den / (den ** (1 + 1 / Math.sqrt(den)) * 36);
       } else if (den > 35) {
-        squishFactor = 17 / 36 + den / (den ** 1.3 * 36);
+        digitSquishFactor = 17 / 36 + den / (den ** 1.3 * 36);
       } else {
-        squishFactor = (17 / 36 + den / (den ** (1 + 6 / den) * 36));
+        digitSquishFactor = (17 / 36 + den / (den ** (1 + 6 / den) * 36));
       }
       for (i = 0; i < den; i++) {
-        x = res / 2 + squishFactor * res * 
+        x = res / 2 + digitSquishFactor * res * 
           Math.cos(Math.PI / 2 - (i / den) * Math.PI * 2);
-        y = disp + res / 2 - squishFactor * res * 
+        y = disp + res / 2 - digitSquishFactor * res * 
           Math.sin(Math.PI / 2 - (i / den) * Math.PI * 2);
         ctx.fillText(i, x - fSize / 3 , y + fSize / 3);
       }
