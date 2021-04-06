@@ -5,15 +5,27 @@ Improve printing with align results
 
 /*
 Optional TODO:
+Make Compute and Update buttons "tabbable"
 Draw loops on repeated digits
 Sanitize inputs or escape outputs (a good practice, even if not important here)
+*/
+
+/*
+Unlikely TODO:
 Make including zero in the circle an option
 Expand supported values, for example, base 1
 Add support for decimal points in inputs.
 Identify earlier repeat point for graphing purposes only.
 */
 
-// Next time I work on a large JS project I should use OOP.
+/*
+Criticism:
+Use statistics to get the draw() math right in future.
+  This would also lend to a reproducable process others can follow.
+Next time I work on a large JS project I should use OOP.
+  This would solve a lot of the organizational issues.
+*/
+
 var remainders = [];
 var repeatStart = 0;
 
@@ -29,7 +41,7 @@ function valueMatch(a1, a2) {
 // Return index of first matching row in 2 column array
 // `aList` is 2d array, `aTarget` is 1d array
 function findMatch(aList, aTarget) {
-  for (i = 0; i < aList.length; i++) {
+  for (var i = 0; i < aList.length; i++) {
     if (valueMatch(aList[i], aTarget)) {
       // Index of match
       return i;
@@ -189,7 +201,7 @@ function compute() {
   }
   
   // Continued long division after no more digits from initial numerator
-  stop = false;
+  var stop = false;
   var exactAnswer = true;
   // `matchIndex` is the location after the floating point where digits repeat.
   var matchIndex = null;
@@ -263,17 +275,7 @@ function compute() {
   var qString = "";
   var mString = "";
   var valueStart = false;
-
-  function pad() {
-    if (alignValues == true) {
-      var spacing = String(rPrint[i]).length - String(values[i][0]).length;
-      if (spacing > 0) {
-        qString += "&nbsp;".repeat(spacing);
-      } else if (spacing < 0) {
-        mString += "&nbsp;".repeat(-spacing);
-      }
-    }
-  }
+  var spacing;
 
   if (alignValues == true) {
     qString += "<b>Quotient: &nbsp;&nbsp;</b>";
@@ -298,7 +300,14 @@ function compute() {
       valueStart = true;
     }
     if (valueStart == true) {
-      pad();
+      if (alignValues == true) {
+        spacing = String(rPrint[i]).length - String(values[i][0]).length;
+        if (spacing > 0) {
+          qString += "&nbsp;".repeat(spacing);
+        } else if (spacing < 0) {
+          mString += "&nbsp;".repeat(-spacing);
+        }
+      }
       qString += values[i][0] + " ";
       mString += rPrint[i] + " ";
     }
@@ -317,17 +326,17 @@ function compute() {
     document.getElementById("quotientBar").innerHTML = qString;
     document.getElementById("modulationBar").innerHTML = mString;
   }
-
-  // Show debug info
+  
+  // Show debug info (NOT RUN)
   var debug = false;
-  var debugDiv;
-  var debugMod;
   if (debug == true) {
+    var debugDiv;
+    var debugMod;
     document.getElementById("debug").innerHTML = "Debug info";
     debugDiv = "";
     debugMod = "";
     for (var value of values) {
-      var spacing = String(value[1]).length - String(value[0]).length;
+      spacing = String(value[1]).length - String(value[0]).length;
       if (spacing > 0) {
         debugDiv += "&nbsp;".repeat(spacing);
       } else if (spacing < 0) {
@@ -359,7 +368,7 @@ function drawGradientLine(context, start, stop, color1, color2) {
   context.stroke();
 }
 
-// onclick Update
+// onclick Update. Also executed after compute()
 function draw() {
   var plot = document.getElementById("plot");
   var ctx = plot.getContext("2d");
@@ -378,10 +387,12 @@ function draw() {
   }
 
   // Determine coordinates
+
   var points = [];
   var displace = true;
-  var disp;
+  var disp; // vertical point displacement
   if (den % 2 == 0 && displace == true) {
+    // No adjustment for even numbered denominators
     disp = 0;
   } else if (den == 1) {
     disp = 5 / 12 * res;
@@ -402,7 +413,7 @@ function draw() {
   }
   
   var fSize;
-  var pvDisplacement = 0;
+  var pvDisplacement = 0; // "Place value displacement"
   if (document.getElementById("showDigits").checked == true) {
     // Determine font size. fSize is also called when filling text.
     if (den > 4) {
@@ -418,7 +429,7 @@ function draw() {
   
   var x;
   var y;
-  for (i = 0; i < den; i++) {
+  for (var i = 0; i < den; i++) {
     x = res / 2 + squishFactor * res * 
       Math.cos(Math.PI / 2 - (i / den) * Math.PI * 2);
     y = disp + res / 2 - squishFactor * res * 
@@ -541,7 +552,6 @@ function draw() {
     if (den == 1) {
       ctx.fillText(0, res / 2 - fSize / 3, res / 2 - 2 / 3 * fSize - radius);
     } else {
-      var squishFactor;
       if (den > 500) {
         squishFactor = 17 / 36 + den / (den ** (1 + 1 / Math.sqrt(den)) * 36);
       } else if (den > 35) {

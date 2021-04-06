@@ -74,12 +74,13 @@ html {
 </style>
 
 <script src="modulus.js"></script>
-<noscript><b> Enable JavaScript to use this page. </b></noscript>
+
 <body>
+<noscript><b> Enable JavaScript to use this page. </b></noscript>
 
 <p class="center">
   This applet calulates floating point division in any base and displays the 
-  modulus pattern of remainders. </br>
+  modulus pattern of remainders. <br/>
   "R>" indicates the start of a repeating sequence of digits.
 </p>
 
@@ -107,7 +108,7 @@ html {
   	  <label><input type="checkbox" id="modBase10" checked /> Show remainders in base 10 </label>
       </div>
   	<div class="entry">
-  	  <label><input type="checkbox" id="alignValues" unchecked /> Align values </label>
+  	  <label><input type="checkbox" id="alignValues" /> Align values </label>
       </div>
   	<div class="entry">
   	  <label>
@@ -162,7 +163,7 @@ html {
   <div class="entry">
     <label>
       <input type="checkbox" id="enableGradient1" 
-        onclick="checkField('enableGradient1', 'gradientColor1');" unchecked /> 
+        onclick="checkField('enableGradient1', 'gradientColor1');" /> 
       Initial line color to
       <input type="text" id="gradientColor1" value="#bb00dd88" disabled />
     </label>
@@ -177,7 +178,7 @@ html {
   <div class="entry">
     <label>
       <input type="checkbox" id="enableGradient2" 
-        onclick="checkField('enableGradient2', 'gradientColor2');" unchecked /> 
+        onclick="checkField('enableGradient2', 'gradientColor2');" /> 
       Repeating line color to
       <input type="text" id="gradientColor2" value="#00ffff" disabled />
     </label>
@@ -213,8 +214,7 @@ html {
 
 <div class="center">
   <canvas class="plot" id="plot" width="600" height="600">
-    <script> 
-      // I don't know if this message works, if you use IE 8, please let me know.
+    <script>
       document.getElementById("plot").innerHTML = 
         "Update to Internet Explorer 9 lol";
     </script>
