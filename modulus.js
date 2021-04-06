@@ -18,7 +18,7 @@ var remainders = [];
 var repeatStart = 0;
 
 // Compare the values of two length 2 arrays
-valueMatch = function(a1, a2) {
+function valueMatch(a1, a2) {
   if (a1[0] == a2[0] && a1[1] == a2[1]) {
     return true;
   } else {
@@ -28,7 +28,7 @@ valueMatch = function(a1, a2) {
 
 // Return index of first matching row in 2 column array
 // `aList` is 2d array, `aTarget` is 1d array
-findMatch = function(aList, aTarget) {
+function findMatch(aList, aTarget) {
   for (i = 0; i < aList.length; i++) {
     if (valueMatch(aList[i], aTarget)) {
       // Index of match
@@ -40,7 +40,7 @@ findMatch = function(aList, aTarget) {
 }
 
 // Convert a base-10 number to another base
-convertToBase = function(value, base) {
+function convertToBase(value, base) {
   var valueB = [];
   var valueTemp = value;
   var degree = 0;
@@ -54,7 +54,7 @@ convertToBase = function(value, base) {
 }
 
 // Validate and modify form values
-validate = function() {
+function validate() {
   // With type="number" no known NaN values exist, but the check is
   // still performed.
   var valid = true;
@@ -117,7 +117,7 @@ validate = function() {
 
 // Generalized function to enable/disable a field using one or more checkboxes
 // (That "one or more" feature was added later.)
-checkField = function(checkIds, fieldId, checkToEnable = true) {
+function checkField(checkIds, fieldId, checkToEnable = true) {
   if (typeof(checkIds) != "object") {
     checkIds = [checkIds];
   }
@@ -138,7 +138,7 @@ checkField = function(checkIds, fieldId, checkToEnable = true) {
 }
 
 // Generalized function to show/hide an element using a checkbox
-showHideElement = function(checkId, elementId, checkToShow = true, 
+function showHideElement(checkId, elementId, checkToShow = true, 
                            showType = "block") {
   if (document.getElementById(checkId).checked == checkToShow) {
     // activate field
@@ -150,7 +150,7 @@ showHideElement = function(checkId, elementId, checkToShow = true,
 }
 
 // onclick "Compute"
-compute = function() {
+function compute() {
   // Enforces only integers. I may provide support for floats later.
   var valid = validate();
   if (valid[0] == false) {
@@ -190,7 +190,7 @@ compute = function() {
   
   // Continued long division after no more digits from initial numerator
   stop = false;
-  exactAnswer = true;
+  var exactAnswer = true;
   // `matchIndex` is the location after the floating point where digits repeat.
   var matchIndex = null;
   while (! stop) {
@@ -264,7 +264,7 @@ compute = function() {
   var mString = "";
   var valueStart = false;
 
-  pad = function() {
+  function pad() {
     if (alignValues == true) {
       var spacing = String(rPrint[i]).length - String(values[i][0]).length;
       if (spacing > 0) {
@@ -320,6 +320,8 @@ compute = function() {
 
   // Show debug info
   var debug = false;
+  var debugDiv;
+  var debugMod;
   if (debug == true) {
     document.getElementById("debug").innerHTML = "Debug info";
     debugDiv = "";
@@ -346,7 +348,7 @@ compute = function() {
   }
 }
 
-drawGradientLine = function(context, start, stop, color1, color2) {
+function drawGradientLine(context, start, stop, color1, color2) {
   var grd = context.createLinearGradient(start[0], start[1], stop[0], stop[1]);
   grd.addColorStop(0, color1);
   grd.addColorStop(1, color2);
@@ -358,7 +360,7 @@ drawGradientLine = function(context, start, stop, color1, color2) {
 }
 
 // onclick Update
-draw = function() {
+function draw() {
   var plot = document.getElementById("plot");
   var ctx = plot.getContext("2d");
   var res = document.getElementById("resolution").value;
@@ -413,10 +415,13 @@ draw = function() {
       pvDisplacement = Math.log10(den / 20) * fSize / 3;
     }
   }
+  
+  var x;
+  var y;
   for (i = 0; i < den; i++) {
-    var x = res / 2 + squishFactor * res * 
+    x = res / 2 + squishFactor * res * 
       Math.cos(Math.PI / 2 - (i / den) * Math.PI * 2);
-    var y = disp + res / 2 - squishFactor * res * 
+    y = disp + res / 2 - squishFactor * res * 
       Math.sin(Math.PI / 2 - (i / den) * Math.PI * 2);
     points[i] = [x + pvDisplacement, y];
   }
@@ -444,17 +449,23 @@ draw = function() {
   if (den != 1) {
     ctx.lineWidth = radius / 3;
     ctx.lineCap = "round";
+    
     // Draw initial lines
+    var stopping;
     if (repeatStart === null) {
-      var stopping = remainders.length - 1;
+      stopping = remainders.length - 1;
     } else {
-      var stopping = repeatStart;
+      stopping = repeatStart;
     }
+    
+    var color1 = "";
+    var color2 = "";
+    var badGradient = false;
+    // This try-catch stuff could be better written.
     try {
       ctx.strokeStyle = document.getElementById("lineColor1").value;
       if (document.getElementById("enableLine1").checked == true) {
-        var color1 = document.getElementById("lineColor1").value;
-        var badGradient = false;
+        color1 = document.getElementById("lineColor1").value;
         try {
           ctx.strokeStyle = document.getElementById("gradientColor1").value;
         }
@@ -464,7 +475,7 @@ draw = function() {
         if (document.getElementById("enableGradient1").checked == true && 
           stopping > 0 && badGradient == false) {
           // Using gradients
-          var color2 = document.getElementById("gradientColor1").value;
+          color2 = document.getElementById("gradientColor1").value;
           for (i = 0; i < stopping; i++) {
             drawGradientLine(ctx, points[remainders[i]], 
               points[remainders[i + 1]], color1, color2);
@@ -482,13 +493,13 @@ draw = function() {
       }
     }
     catch {} // Do nothing. Skipped initial line
-    
+      
+    badGradient = false;
     try {
       ctx.strokeStyle = document.getElementById("lineColor2").value;
       if (repeatStart !== null) {
         // Draw repeating lines
-        var color1 = document.getElementById("lineColor2").value;
-        var badGradient = false;
+        color1 = document.getElementById("lineColor2").value;
         try {
           ctx.strokeStyle = document.getElementById("gradientColor2").value;
         }
@@ -498,7 +509,7 @@ draw = function() {
         if (document.getElementById("enableGradient2").checked == true && 
             remainders.length > 1 && badGradient == false) {
           // Using gradients
-          var color2 = document.getElementById("gradientColor2").value;
+          color2 = document.getElementById("gradientColor2").value;
           for (i = repeatStart; i < remainders.length - 1; i++) {
             drawGradientLine(ctx, points[remainders[i]], 
               points[remainders[i + 1]], color1, color2);
@@ -530,17 +541,18 @@ draw = function() {
     if (den == 1) {
       ctx.fillText(0, res / 2 - fSize / 3, res / 2 - 2 / 3 * fSize - radius);
     } else {
+      var squishFactor;
       if (den > 500) {
-        var squishFactor = 17 / 36 + den / (den ** (1 + 1 / Math.sqrt(den)) * 36);
+        squishFactor = 17 / 36 + den / (den ** (1 + 1 / Math.sqrt(den)) * 36);
       } else if (den > 35) {
-        var squishFactor = 17 / 36 + den / (den ** 1.3 * 36);
+        squishFactor = 17 / 36 + den / (den ** 1.3 * 36);
       } else {
-        var squishFactor = (17 / 36 + den / (den ** (1 + 6 / den) * 36));
+        squishFactor = (17 / 36 + den / (den ** (1 + 6 / den) * 36));
       }
       for (i = 0; i < den; i++) {
-        var x = res / 2 + squishFactor * res * 
+        x = res / 2 + squishFactor * res * 
           Math.cos(Math.PI / 2 - (i / den) * Math.PI * 2);
-        var y = disp + res / 2 - squishFactor * res * 
+        y = disp + res / 2 - squishFactor * res * 
           Math.sin(Math.PI / 2 - (i / den) * Math.PI * 2);
         ctx.fillText(i, x - fSize / 3 , y + fSize / 3);
       }
