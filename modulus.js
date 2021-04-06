@@ -1,30 +1,26 @@
-/*
+/*------------------------------------------------------------------------------
 TODO:
 Improve printing with align results
-*/
 
-/*
 Optional TODO:
 Make Compute and Update buttons "tabbable"
 Draw loops on repeated digits
-Sanitize inputs or escape outputs (a good practice, even if not important here)
-*/
+Sanitize inputs &/| escape outputs (a good practice, even if not necessary here)
 
-/*
 Unlikely TODO:
 Make including zero in the circle an option
 Expand supported values, for example, base 1
 Add support for decimal points in inputs.
 Identify earlier repeat point for graphing purposes only.
-*/
 
-/*
-Criticism:
-Use statistics to get the draw() math right in future.
-  This would also lend to a reproducable process others can follow.
-Next time I work on a large JS project I should use OOP.
-  This would solve a lot of the organizational issues.
-*/
+Other comments:
+
+Use statistics to get the draw() math right in future. This would be more 
+reproducable and result in simpler formulas.
+
+Next time I work on a large JS project I should use OOP; it will help with 
+organizational issues.
+------------------------------------------------------------------------------*/
 
 var remainders = [];
 var repeatStart = 0;
@@ -168,6 +164,19 @@ function compute() {
   if (valid[0] == false) {
     return;
   }
+
+  // Test replaceAll
+  try {
+    "cut".replaceAll("u", "a");
+  }
+  catch {
+    document.getElementById("debug").innerHTML = 
+      "`String.replaceAll` doesn't appear to be supported by this browser." +
+      "<br/> See <a href = https://caniuse.com/?search=replaceall> " +
+      "https://caniuse.com/?search=replaceall to learn about updates.</a>";
+    return;
+  }
+  document.getElementById("debug").innerHTML = "";
   
   // Copy values from form
   var num = document.getElementById("numerator").value;
@@ -258,7 +267,8 @@ function compute() {
   var computeMessage = "";
   if (valid[1] == false) {
     computeMessage += 
-      "Warning: Untested/unsupported values used. Results are not guaranteed.</br></br>";
+      "Warning: Untested/unsupported values used. " +
+      "Results are not guaranteed.</br></br>";
   }
   computeMessage += num + "/" + den + " appears as [" + numB + "]/[" + denB + 
     "] in base " + base + ".";
@@ -327,8 +337,8 @@ function compute() {
     document.getElementById("modulationBar").innerHTML = mString;
   }
   
-  // Show debug info (NOT RUN)
-  var debug = false;
+  // Show debug info
+  var debug = false; // Change to run
   if (debug == true) {
     var debugDiv;
     var debugMod;
@@ -457,92 +467,105 @@ function draw() {
     }
   }
   
+  //
   if (den != 1) {
     ctx.lineWidth = radius / 3;
     ctx.lineCap = "round";
     
-    // Draw initial lines
+    // Initialize to draw lines
     var stopping;
     if (repeatStart === null) {
       stopping = remainders.length - 1;
     } else {
       stopping = repeatStart;
     }
-    
     var color1 = "";
     var color2 = "";
+    var badColor = false;
     var badGradient = false;
-    // This try-catch stuff could be better written.
+
+    // Validate initial line inputs
+    // validate() may also work better with try..catch statements.
     try {
       ctx.strokeStyle = document.getElementById("lineColor1").value;
-      if (document.getElementById("enableLine1").checked == true) {
-        color1 = document.getElementById("lineColor1").value;
-        try {
-          ctx.strokeStyle = document.getElementById("gradientColor1").value;
-        }
-        catch {
-          badGradient = true;
-        }
-        if (document.getElementById("enableGradient1").checked == true && 
+    }
+    catch {
+      badColor = true;
+    }
+    try {
+      ctx.strokeStyle = document.getElementById("gradientColor1").value;
+    }
+    catch {
+      badGradient = true;
+    }
+
+    // Draw initial lines
+    if (document.getElementById("enableLine1").checked == true &&
+        badColor == false) {
+      color1 = document.getElementById("lineColor1").value;
+      if (document.getElementById("enableGradient1").checked == true && 
           stopping > 0 && badGradient == false) {
-          // Using gradients
-          color2 = document.getElementById("gradientColor1").value;
-          for (i = 0; i < stopping; i++) {
-            drawGradientLine(ctx, points[remainders[i]], 
-              points[remainders[i + 1]], color1, color2);
-          }
-        } else {
-          // Not using gradients
-          ctx.strokeStyle = color1;
-          ctx.beginPath();
-          ctx.moveTo(points[remainders[0]][0], points[remainders[0]][1]);
-          for (i = 1; i <= stopping; i++) {
-            ctx.lineTo(points[remainders[i]][0], points[remainders[i]][1]);
-          }
-          ctx.stroke();
+        // Using gradients
+        color2 = document.getElementById("gradientColor1").value;
+        for (i = 0; i < stopping; i++) {
+          drawGradientLine(ctx, points[remainders[i]], 
+            points[remainders[i + 1]], color1, color2);
         }
+      } else {
+        // Not using gradients
+        ctx.strokeStyle = color1;
+        ctx.beginPath();
+        ctx.moveTo(points[remainders[0]][0], points[remainders[0]][1]);
+        for (i = 1; i <= stopping; i++) {
+          ctx.lineTo(points[remainders[i]][0], points[remainders[i]][1]);
+        }
+        ctx.stroke();
       }
     }
-    catch {} // Do nothing. Skipped initial line
       
+    // Validate repeating line inputs
+    badColor = false;
     badGradient = false;
     try {
       ctx.strokeStyle = document.getElementById("lineColor2").value;
-      if (repeatStart !== null) {
-        // Draw repeating lines
-        color1 = document.getElementById("lineColor2").value;
-        try {
-          ctx.strokeStyle = document.getElementById("gradientColor2").value;
+    }
+    catch {
+      badColor = true;
+    }
+    try {
+      ctx.strokeStyle = document.getElementById("gradientColor2").value;
+    }
+    catch {
+      badGradient = true;
+    }
+
+    // Draw repeating lines
+    if (repeatStart !== null && badColor == false) {
+      color1 = document.getElementById("lineColor2").value;
+      if (document.getElementById("enableGradient2").checked == true && 
+          remainders.length > 1 && badGradient == false) {
+        // Using gradients
+        color2 = document.getElementById("gradientColor2").value;
+        for (i = repeatStart; i < remainders.length - 1; i++) {
+          drawGradientLine(ctx, points[remainders[i]], 
+            points[remainders[i + 1]], color1, color2);
         }
-        catch {
-          badGradient = true;
+        drawGradientLine(ctx, points[remainders[remainders.length - 1]], 
+          points[remainders[repeatStart]], color1, color2);
+      } else {
+        // Not using gradients
+        ctx.strokeStyle = color1;
+        ctx.beginPath();
+        ctx.moveTo(points[remainders[repeatStart]][0], 
+                   points[remainders[repeatStart]][1]);
+        for (i = repeatStart; i < remainders.length; i++) {
+          ctx.lineTo(points[remainders[i]][0], points[remainders[i]][1]);
         }
-        if (document.getElementById("enableGradient2").checked == true && 
-            remainders.length > 1 && badGradient == false) {
-          // Using gradients
-          color2 = document.getElementById("gradientColor2").value;
-          for (i = repeatStart; i < remainders.length - 1; i++) {
-            drawGradientLine(ctx, points[remainders[i]], 
-              points[remainders[i + 1]], color1, color2);
-          }
-          drawGradientLine(ctx, points[remainders[remainders.length - 1]], 
-            points[remainders[repeatStart]], color1, color2);
-        } else {
-          // Not using gradients
-          ctx.strokeStyle = color1;
-          ctx.beginPath();
-          ctx.moveTo(points[remainders[repeatStart]][0], 
-                     points[remainders[repeatStart]][1]);
-          for (i = repeatStart; i < remainders.length; i++) {
-            ctx.lineTo(points[remainders[i]][0], points[remainders[i]][1]);
-          }
-          ctx.lineTo(points[remainders[repeatStart]][0], 
-                     points[remainders[repeatStart]][1]);
-          ctx.stroke();
-        }
+        ctx.lineTo(points[remainders[repeatStart]][0], 
+                   points[remainders[repeatStart]][1]);
+        ctx.stroke();
       }
     }
-    catch {} // Do nothing. Skipped repeating lines
   }
   
   // Draw digits
