@@ -378,7 +378,7 @@ draw = function() {
   // Determine coordinates
   var points = [];
   var displace = true;
-  var disp = 0;
+  var disp;
   if (den % 2 == 0 && displace == true) {
     disp = 0;
   } else if (den == 1) {
@@ -399,7 +399,7 @@ draw = function() {
     squishFactor = 5 / 12;
   }
   
-  var fSize = 0;
+  var fSize;
   var pvDisplacement = 0;
   if (document.getElementById("showDigits").checked == true) {
     // Determine font size. fSize is also called when filling text.
@@ -422,10 +422,11 @@ draw = function() {
   }
 
   // Determine thickness (point size)
+  var radius;
   if (den < 11) {
-    var radius = 10 * Math.sqrt(10 / den) * (res / 600);
+    radius = 10 * Math.sqrt(10 / den) * (res / 600);
   } else {
-    var radius = 10 * (10 / den) * (res / 600);
+    radius = 10 * (10 / den) * (res / 600);
   }
 
   // Draw points
