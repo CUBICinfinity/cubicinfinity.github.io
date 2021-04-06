@@ -5,8 +5,8 @@ Improve printing with align results
 
 /*
 Optional TODO:
-Draw loops on repeated digit.
-Sanitize inputs (good practice for when it matters)
+Draw loops on repeated digits
+Sanitize inputs or escape outputs (a good practice, even if not important here)
 Make including zero in the circle an option
 Expand supported values, for example, base 1
 Add support for decimal points in inputs.
@@ -19,7 +19,7 @@ var repeatStart = 0;
 
 // Compare the values of two length 2 arrays
 valueMatch = function(a1, a2) {
-  if (a1[0] == a2[0] & a1[1] == a2[1]) {
+  if (a1[0] == a2[0] && a1[1] == a2[1]) {
     return true;
   } else {
     return false;
@@ -83,7 +83,7 @@ validate = function() {
   }
 
   var base = document.getElementById("base").value;
-  if (isNaN(base) || (base < 2 & base > -2)) {
+  if (isNaN(base) || (base < 2 && base > -2)) {
     valid = false;
     document.getElementById("base").style.borderColor = "red";
   } else if (base < -1) {
@@ -95,7 +95,7 @@ validate = function() {
 
   var precision = document.getElementById("precision").value;
   var limitPrecision = document.getElementById("limitPrecision").checked;
-  if (limitPrecision == true & isNaN(precision)) {
+  if (limitPrecision == true && isNaN(precision)) {
     valid = false;
     document.getElementById("precision").style.borderColor = "red";
   } else {
@@ -122,7 +122,7 @@ checkField = function(checkIds, fieldId, checkToEnable = true) {
     checkIds = [checkIds];
   }
   var allChecked = true;
-  for (id of checkIds) {
+  for (var id of checkIds) {
     if (document.getElementById(id).checked == false) {
       allChecked = false;
       break;
@@ -154,17 +154,16 @@ compute = function() {
   // Enforces only integers. I may provide support for floats later.
   var valid = validate();
   if (valid[0] == false) {
-    return
+    return;
   }
   
   // Copy values from form
   var num = document.getElementById("numerator").value;
   var den = document.getElementById("denominator").value;
   var base = document.getElementById("base").value;
+  var maxPrecision = null;
   if (document.getElementById("limitPrecision").checked == true) {
-    var maxPrecision = document.getElementById("precision").value;
-  } else {
-    var maxPrecision = null;
+    maxPrecision = document.getElementById("precision").value;
   }
   var modBase10 = document.getElementById("modBase10").checked;
 
@@ -182,7 +181,7 @@ compute = function() {
   var values = [];
 
   // Initial long division
-  for (newDigit of numB) {
+  for (var newDigit of numB) {
     newNum = mod * base + newDigit;
     div = Math.trunc(newNum / den);
     mod = newNum % den;
@@ -203,21 +202,21 @@ compute = function() {
       matchIndex = findMatch(values.slice(numB.length), [div, mod]);
     }
     // Stop if repeating sequence has been identified or solution is round
-    if (! (values.length >= numB.length & mod == 0 & div == 0) & 
+    if (! (values.length >= numB.length && mod == 0 && div == 0) && 
         matchIndex === null) {
       values.push([div, mod]);
     } else {
       stop = true;
     }
     // Stop if precision limit is met
-    if (maxPrecision !== null & values.length - numB.length >= maxPrecision) {
+    if (maxPrecision !== null && values.length - numB.length >= maxPrecision) {
       exactAnswer = false;
       stop = true;
     }
   }
 
   // Convert if Not show remainders in base 
-  var rPrint = values.map(function(row){return row[1]});
+  var rPrint = values.map(function(row){ return row[1]; });
   if (modBase10 == false) {
     for (i = 0; i < rPrint.length; i++) {
       rPrint[i] = 
@@ -227,14 +226,14 @@ compute = function() {
  
  // These lines were added later to assign values for the plot.
   var i = 0;
-  while (i < values.length & i < numB.length - 1) {
+  while (i < values.length && i < numB.length - 1) {
     if (values[i][0] == 0) {
       i++;
     } else {
       break;
     }
   }
-  remainders = values.slice(i).map(function(row){return row[1]});
+  remainders = values.slice(i).map(function(row){ return row[1]; });
   if (matchIndex === null) {
     repeatStart = null;
   } else {
@@ -264,8 +263,6 @@ compute = function() {
   var qString = "";
   var mString = "";
   var valueStart = false;
-  
-  var valuesSource = 
 
   pad = function() {
     if (alignValues == true) {
@@ -292,7 +289,7 @@ compute = function() {
       qString += ". ";
       mString += "| ";
     }
-    if (matchIndex !== null & i == matchIndex + numB.length) {
+    if (matchIndex !== null && i == matchIndex + numB.length) {
       qString += "R> ";
       mString += "R> ";
     }
@@ -324,10 +321,10 @@ compute = function() {
   // Show debug info
   var debug = false;
   if (debug == true) {
-    document.getElementById("debug").innerHTML = "Debug info"
+    document.getElementById("debug").innerHTML = "Debug info";
     debugDiv = "";
     debugMod = "";
-    for (value of values) {
+    for (var value of values) {
       var spacing = String(value[1]).length - String(value[0]).length;
       if (spacing > 0) {
         debugDiv += "&nbsp;".repeat(spacing);
@@ -372,7 +369,7 @@ draw = function() {
   
   // Draw background
   var backgroundColor = document.getElementById("backgroundColor").value;
-  if (backgroundColor != "" & 
+  if (backgroundColor != "" && 
       document.getElementById("enableBackground").checked == true) {
     ctx.fillStyle = backgroundColor;
     ctx.fillRect(0, 0, res, res);
@@ -381,37 +378,40 @@ draw = function() {
   // Determine coordinates
   var points = [];
   var displace = true;
-  if (den % 2 == 0 & displace == true) {
-    var disp = 0;
+  var disp = 0;
+  if (den % 2 == 0 && displace == true) {
+    disp = 0;
   } else if (den == 1) {
-    var disp = 5 / 12 * res;
+    disp = 5 / 12 * res;
   } else {
-    var disp = 5 / 24 * res * (1 + Math.sin(
+    disp = 5 / 24 * res * (1 + Math.sin(
       Math.PI / 2 - 2 * Math.PI * Math.floor(den / 2) / den));
   }
+  
+  var squishFactor = 0;
   if (den > 500) {
-    var squishFactor = 17 / 36 + den / (den ** (1 + 1 / (0.5 * Math.sqrt(den))) * 36);
+    squishFactor = 17 / 36 + den / (den ** (1 + 1 / (0.5 * Math.sqrt(den))) * 36);
   } else if (den > 62) {
-    var squishFactor = 10 / 22 + den / (den ** (1 + 80 / den) * 22);
+    squishFactor = 10 / 22 + den / (den ** (1 + 80 / den) * 22);
   } else if (den > 7) {
-    var squishFactor = 5 / 12 + den / (den ** (1 + 10 / den) * 12);
+    squishFactor = 5 / 12 + den / (den ** (1 + 10 / den) * 12);
   } else {
-    var squishFactor = 5 / 12;
+    squishFactor = 5 / 12;
   }
+  
+  var fSize = 0;
+  var pvDisplacement = 0;
   if (document.getElementById("showDigits").checked == true) {
     // Determine font size. fSize is also called when filling text.
     if (den > 4) {
-      var fSize = Math.sqrt(res / den / 60) * 30;
+      fSize = Math.sqrt(res / den / 60) * 30;
     } else {
-      var fSize = den * (res / den) / 15;
+      fSize = den * (res / den) / 15;
     }
     if (den > 99) {
-      var pvDisplacement = Math.log10(den / 20) * fSize / 3;
-    } else {
-      var pvDisplacement = 0;
+      // Shift digits horizontally
+      pvDisplacement = Math.log10(den / 20) * fSize / 3;
     }
-  } else {
-    var pvDisplacement = 0;
   }
   for (i = 0; i < den; i++) {
     var x = res / 2 + squishFactor * res * 
@@ -430,7 +430,7 @@ draw = function() {
 
   // Draw points
   var pointColor = document.getElementById("pointColor").value;
-  if (pointColor != "" & 
+  if (pointColor != "" && 
       document.getElementById("enablePoints").checked == true) {
     ctx.fillStyle = pointColor;
     for (i = 0; i < points.length; i++) {
@@ -460,35 +460,13 @@ draw = function() {
         catch {
           badGradient = true;
         }
-        if (document.getElementById("enableGradient1").checked == true & 
-          stopping > 0 & badGradient == false) {
+        if (document.getElementById("enableGradient1").checked == true && 
+          stopping > 0 && badGradient == false) {
           // Using gradients
           var color2 = document.getElementById("gradientColor1").value;
           for (i = 0; i < stopping; i++) {
-            drawGradientLine(
-              ctx, 
-              points[remainders[i]], 
-              points[remainders[i + 1]], 
-              color1, 
-              color2);
-            /*
-            var grd = ctx.createLinearGradient(
-              points[remainders[i]][0], 
-              points[remainders[i]][1],
-              points[remainders[i + 1]][0], 
-              points[remainders[i + 1]][1]);
-            grd.addColorStop(0, color1);
-            grd.addColorStop(1, color2);
-            ctx.strokeStyle = grd;
-            ctx.beginPath();
-            ctx.moveTo(
-              points[remainders[i]][0], 
-              points[remainders[i]][1]);
-            ctx.lineTo(
-              points[remainders[i + 1]][0], 
-              points[remainders[i + 1]][1]);
-            ctx.stroke();
-            */
+            drawGradientLine(ctx, points[remainders[i]], 
+              points[remainders[i + 1]], color1, color2);
           }
         } else {
           // Not using gradients
@@ -516,40 +494,16 @@ draw = function() {
         catch {
           badGradient = true;
         }
-        if (document.getElementById("enableGradient2").checked == true & 
-            remainders.length > 1 & badGradient == false) {
+        if (document.getElementById("enableGradient2").checked == true && 
+            remainders.length > 1 && badGradient == false) {
           // Using gradients
           var color2 = document.getElementById("gradientColor2").value;
           for (i = repeatStart; i < remainders.length - 1; i++) {
-            var grd = ctx.createLinearGradient(
-              points[remainders[i]][0], 
-              points[remainders[i]][1],
-              points[remainders[i + 1]][0], 
-              points[remainders[i + 1]][1]);
-            grd.addColorStop(0, color1);
-            grd.addColorStop(1, color2);
-            ctx.strokeStyle = grd;
-            ctx.beginPath();
-            ctx.moveTo(points[remainders[i]][0], points[remainders[i]][1]);
-            ctx.lineTo(points[remainders[i + 1]][0], points[remainders[i + 1]][1]);
-            ctx.stroke();
+            drawGradientLine(ctx, points[remainders[i]], 
+              points[remainders[i + 1]], color1, color2);
           }
-          var grd = ctx.createLinearGradient(
-            points[remainders[remainders.length - 1]][0], 
-            points[remainders[remainders.length - 1]][1],
-            points[remainders[repeatStart]][0], 
-            points[remainders[repeatStart]][1]);
-          grd.addColorStop(0, color1);
-          grd.addColorStop(1, color2);
-          ctx.strokeStyle = grd;
-          ctx.beginPath();
-          ctx.moveTo(
-            points[remainders[remainders.length - 1]][0], 
-            points[remainders[remainders.length - 1]][1]);
-          ctx.lineTo(
-            points[remainders[repeatStart]][0], 
-            points[remainders[repeatStart]][1]);
-          ctx.stroke();
+          drawGradientLine(ctx, points[remainders[remainders.length - 1]], 
+            points[remainders[repeatStart]], color1, color2);
         } else {
           // Not using gradients
           ctx.strokeStyle = color1;
