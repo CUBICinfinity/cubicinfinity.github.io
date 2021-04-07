@@ -280,7 +280,8 @@ function compute() {
   }
   
   // Displays
-  displayOutputs(valid, exactAnswer, values, matchIndex, rPrint, num, den, numB, denB, base, debug = false);
+  var debug = false; // Change to display test output
+  displayOutputs(valid, exactAnswer, values, matchIndex, rPrint, num, den, numB, denB, base, debug);
 
   plotReady = true;
 
@@ -321,7 +322,7 @@ function displayOutputs(valid, exactAnswer, values, matchIndex, rPrint, num, den
       mString += "<b>Remainders: </b>";
     }
 
-    for (i = 0; i < values.length; i++) {
+    for (var i = 0; i < values.length; i++) {
       if (i == numB.length) {
         if (qString.length == 0) {
           qString += "0 ";
