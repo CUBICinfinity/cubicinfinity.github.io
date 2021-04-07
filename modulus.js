@@ -280,8 +280,8 @@ function compute() {
   }
   
   // Displays
-  var debug = false; // Change to display test output
-  displayOutputs(valid, exactAnswer, values, matchIndex, rPrint, num, den, numB, denB, base, debug);
+  displayOutputs(valid, exactAnswer, values, matchIndex, rPrint, 
+    num, den, numB, denB, base);
 
   plotReady = true;
 
@@ -291,7 +291,8 @@ function compute() {
   }
 }
 
-function displayOutputs(valid, exactAnswer, values, matchIndex, rPrint, num, den, numB, denB, base, debug = false) {
+function displayOutputs(valid, exactAnswer, values, matchIndex, rPrint, 
+  num, den, numB, denB, base) {
   // Details message
   var computeMessage = "";
   if (valid[1] == false) {
@@ -367,28 +368,6 @@ function displayOutputs(valid, exactAnswer, values, matchIndex, rPrint, num, den
       document.getElementById("modulationBar").innerHTML = mString;
     }
 
-    // Show debug info
-    if (debug == true) {
-      var debugDiv;
-      var debugMod;
-      document.getElementById("debug").innerHTML = "Debug info";
-      debugDiv = "";
-      debugMod = "";
-      for (var value of values) {
-        spacing = String(value[1]).length - String(value[0]).length;
-        if (spacing > 0) {
-          debugDiv += "&nbsp;".repeat(spacing);
-        } else if (spacing < 0) {
-          debugMod += "&nbsp;".repeat(-spacing);
-        }
-        debugDiv += value[0] + " ";
-        debugMod += value[1] + " ";
-      }
-      document.getElementById("debugOutput").innerHTML = debugDiv + "</br>" + 
-        debugMod + "</br> matchIndex = " + matchIndex +
-        "</br> remainders = " + remainders +
-        "</br> repeatStart = " + repeatStart;
-    }
   } else {
     // Hide values
     document.getElementById("resultBars").style.display = "none";
