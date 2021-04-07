@@ -278,9 +278,19 @@ function compute() {
   } else {
     repeatStart = matchIndex + numB.length - i;
   }
+  
+  // Displays
+  displayOutputs(valid, exactAnswer, values, matchIndex, rPrint, num, den, numB, denB, base, debug = false);
 
-  // -- Displays --
+  plotReady = true;
 
+  // Update plot
+  if (document.getElementById("includePlot").checked == true) {
+    draw();
+  }
+}
+
+function displayOutputs(valid, exactAnswer, values, matchIndex, rPrint, num, den, numB, denB, base, debug = false) {
   // Details message
   var computeMessage = "";
   if (valid[1] == false) {
@@ -292,98 +302,96 @@ function compute() {
     "] in base " + base + ".";
   computeMessage = computeMessage.replaceAll(",", " ");
   if (exactAnswer == false) {
-    computeMessage += 
-      "</br></br>The results have been truncated by \"Max precision\".";
+    computeMessage += "</br></br>" + 
+    "Warning: The results have been truncated by \"Max precision\".";
   }
   document.getElementById("computeMessage").innerHTML = computeMessage;
 
-  var alignValues = document.getElementById("alignValues").checked;
+  if (document.getElementById("displayValues").checked == true) {
+    var alignValues = document.getElementById("alignValues").checked;
+    var qString = "";
+    var mString = "";
+    var valueStart = false;
+    var spacing;
+    
+    // Format results
 
-  // Format results
-  var qString = "";
-  var mString = "";
-  var valueStart = false;
-  var spacing;
+    if (alignValues == true) {
+      qString += "<b>Quotient: &nbsp;&nbsp;</b>";
+      mString += "<b>Remainders: </b>";
+    }
 
-  if (alignValues == true) {
-    qString += "<b>Quotient: &nbsp;&nbsp;</b>";
-    mString += "<b>Remainders: </b>";
-  }
-
-  for (i = 0; i < values.length; i++) {
-    if (i == numB.length) {
-      if (qString.length == 0) {
-        qString += "0 ";
-        mString += rPrint[i-1] + " ";
-      }
-      qString += ". ";
-      mString += "| ";
-    }
-    if (matchIndex !== null && i == matchIndex + numB.length) {
-      qString += "R> ";
-      mString += "R> ";
-    }
-    // Excludes leading zeros and uninteresting remainders
-    if (i >= numB.length || values[i][0] != 0) {
-      valueStart = true;
-    }
-    if (valueStart == true) {
-      if (alignValues == true) {
-        spacing = String(rPrint[i]).length - String(values[i][0]).length;
-        if (spacing > 0) {
-          qString += "&nbsp;".repeat(spacing);
-        } else if (spacing < 0) {
-          mString += "&nbsp;".repeat(-spacing);
+    for (i = 0; i < values.length; i++) {
+      if (i == numB.length) {
+        if (qString.length == 0) {
+          qString += "0 ";
+          mString += rPrint[i-1] + " ";
         }
+        qString += ". ";
+        mString += "| ";
       }
-      qString += values[i][0] + " ";
-      mString += rPrint[i] + " ";
+      if (matchIndex !== null && i == matchIndex + numB.length) {
+        qString += "R> ";
+        mString += "R> ";
+      }
+      // Excludes leading zeros and uninteresting remainders
+      if (i >= numB.length || values[i][0] != 0) {
+        valueStart = true;
+      }
+      if (valueStart == true) {
+        if (alignValues == true) {
+          spacing = String(rPrint[i]).length - String(values[i][0]).length;
+          if (spacing > 0) {
+            qString += "&nbsp;".repeat(spacing);
+          } else if (spacing < 0) {
+            mString += "&nbsp;".repeat(-spacing);
+          }
+        }
+        qString += values[i][0] + " ";
+        mString += rPrint[i] + " ";
+      }
     }
-  }
 
-  if (alignValues == true) {
-    document.getElementById("resultAligned").style.display = "block";
-    document.getElementById("resultBars").style.display = "none";
-    document.getElementById("resultAligned").innerHTML = 
-      "The \"Align values\" feature is not fully developed.</br>" + 
-      qString + "</br>" + mString;
+    if (alignValues == true) {
+      document.getElementById("resultAligned").style.display = "block";
+      document.getElementById("resultBars").style.display = "none";
+      document.getElementById("resultAligned").innerHTML = 
+        "The \"Align values\" feature is not fully developed.</br>" + 
+        qString + "</br>" + mString;
+    } else {
+      document.getElementById("resultAligned").style.display = "none";
+      document.getElementById("resultBars").style.display = "block";
+      // Update results bars
+      document.getElementById("quotientBar").innerHTML = qString;
+      document.getElementById("modulationBar").innerHTML = mString;
+    }
+
+    // Show debug info
+    if (debug == true) {
+      var debugDiv;
+      var debugMod;
+      document.getElementById("debug").innerHTML = "Debug info";
+      debugDiv = "";
+      debugMod = "";
+      for (var value of values) {
+        spacing = String(value[1]).length - String(value[0]).length;
+        if (spacing > 0) {
+          debugDiv += "&nbsp;".repeat(spacing);
+        } else if (spacing < 0) {
+          debugMod += "&nbsp;".repeat(-spacing);
+        }
+        debugDiv += value[0] + " ";
+        debugMod += value[1] + " ";
+      }
+      document.getElementById("debugOutput").innerHTML = debugDiv + "</br>" + 
+        debugMod + "</br> matchIndex = " + matchIndex +
+        "</br> remainders = " + remainders +
+        "</br> repeatStart = " + repeatStart;
+    }
   } else {
+    // Hide values
+    document.getElementById("resultBars").style.display = "none";
     document.getElementById("resultAligned").style.display = "none";
-    document.getElementById("resultBars").style.display = "block";
-    // Update results bars
-    document.getElementById("quotientBar").innerHTML = qString;
-    document.getElementById("modulationBar").innerHTML = mString;
-  }
-  
-  // Show debug info
-  var debug = false; // Change to run
-  if (debug == true) {
-    var debugDiv;
-    var debugMod;
-    document.getElementById("debug").innerHTML = "Debug info";
-    debugDiv = "";
-    debugMod = "";
-    for (var value of values) {
-      spacing = String(value[1]).length - String(value[0]).length;
-      if (spacing > 0) {
-        debugDiv += "&nbsp;".repeat(spacing);
-      } else if (spacing < 0) {
-        debugMod += "&nbsp;".repeat(-spacing);
-      }
-      debugDiv += value[0] + " ";
-      debugMod += value[1] + " ";
-    }
-    document.getElementById("debugOutput").innerHTML = debugDiv + "</br>" + 
-      debugMod + "</br> matchIndex = " + matchIndex +
-      "</br> remainders = " + remainders +
-      "</br> repeatStart = " + repeatStart;
-  }
-
-  plotReady = true;
-
-  // Update plot
-  if (document.getElementById("includePlot").checked == true) {
-    draw();
   }
 }
 
@@ -423,6 +431,7 @@ function draw() {
   var plot = document.getElementById("plot");
   var ctx = plot.getContext("2d");
   var res = document.getElementById("resolution").value;
+  var absDen = Math.abs(den);
  
   plot.width = String(res);
   plot.height = String(res);
@@ -440,58 +449,60 @@ function draw() {
   var points = [];
   var displace = true;
   var disp; // vertical point displacement
-  if (den % 2 == 0 && displace == true) {
+
+  if (absDen % 2 == 0 && displace == true) {
     // No adjustment for even numbered denominators
     disp = 0;
-  } else if (den == 1) {
+  } else if (absDen == 1) {
     disp = 5 / 12 * res;
   } else {
     disp = 5 / 24 * res * (1 + Math.sin(
-      Math.PI / 2 - 2 * Math.PI * Math.floor(den / 2) / den));
+      Math.PI / 2 - 2 * Math.PI * Math.floor(absDen / 2) / absDen));
   }
   
   var fSize;
   var pvDisplacement = 0; // "Place value displacement"
   if (document.getElementById("showDigits").checked == true) {
     // Determine font size. fSize is also called when filling text.
-    if (den > 4) {
-      fSize = Math.sqrt(res / den / 60) * 30;
+    if (absDen > 4) {
+      fSize = Math.sqrt(res / absDen / 60) * 30;
     } else {
-      fSize = den * (res / den) / 15;
+      fSize = absDen * (res / absDen) / 15;
     }
-    if (den > 99) {
+    if (absDen > 99) {
       // Shift circle of points to the right when digits are longer on the left.
-      pvDisplacement = Math.log10(den / 20) * fSize / 3;
+      pvDisplacement = Math.log10(absDen / 20) * fSize / 3;
     }
   }
   
   var squishFactor;
-  if (den > 500) {
-    squishFactor = 17 / 36 + den / (den ** (1 + 1 / (0.5 * Math.sqrt(den))) * 36);
-  } else if (den > 62) {
-    squishFactor = 10 / 22 + den / (den ** (1 + 80 / den) * 22);
-  } else if (den > 7) {
-    squishFactor = 5 / 12 + den / (den ** (1 + 10 / den) * 12);
+  if (absDen > 500) {
+    squishFactor = 17 / 36 + absDen / 
+      (absDen ** (1 + 1 / (0.5 * Math.sqrt(absDen))) * 36);
+  } else if (absDen > 62) {
+    squishFactor = 10 / 22 + absDen / (absDen ** (1 + 80 / absDen) * 22);
+  } else if (absDen > 7) {
+    squishFactor = 5 / 12 + absDen / (absDen ** (1 + 10 / absDen) * 12);
   } else {
     squishFactor = 5 / 12;
   }
   
   var x;
   var y;
-  for (var i = 0; i < den; i++) {
+  for (var i = 0; i < absDen; i++) {
     x = res / 2 + squishFactor * res * 
-      Math.cos(Math.PI / 2 - (i / den) * Math.PI * 2);
+      Math.cos(Math.PI / 2 - (i / absDen) * Math.PI * 2);
     y = disp + res / 2 - squishFactor * res * 
-      Math.sin(Math.PI / 2 - (i / den) * Math.PI * 2);
+      Math.sin(Math.PI / 2 - (i / absDen) * Math.PI * 2);
     points[i] = [x + pvDisplacement, y];
   }
 
   // Determine brush thickness (point size)
   var radius;
-  if (den < 11) {
-    radius = 10 * Math.sqrt(10 / den) * (res / 600);
+  if (absDen < 11) {
+    radius = 10 * Math.sqrt(10 / absDen) * (res / 600);
   } else {
-    radius = 10 * (10 / den) * (res / 600);
+    radius = 10 * (10 / absDen) * (res / 600);
   }
 
   // Draw points
@@ -513,28 +524,30 @@ function draw() {
       true) {
     ctx.fillStyle = document.getElementById("digitsColor").value;
     ctx.font = fSize + "px Inconsolata";
-    if (den == 1) {
+    if (absDen == 1) {
       ctx.fillText(0, res / 2 - fSize / 3, res / 2 - 2 / 3 * fSize - radius);
     } else {
-      if (den > 500) {
-        digitSquishFactor = 17 / 36 + den / (den ** (1 + 1 / Math.sqrt(den)) * 36);
-      } else if (den > 35) {
-        digitSquishFactor = 17 / 36 + den / (den ** 1.3 * 36);
+      if (absDen > 500) {
+        digitSquishFactor = 17 / 36 + absDen / 
+          (absDen ** (1 + 1 / Math.sqrt(absDen)) * 36);
+      } else if (absDen > 35) {
+        digitSquishFactor = 17 / 36 + absDen / (absDen ** 1.3 * 36);
       } else {
-        digitSquishFactor = (17 / 36 + den / (den ** (1 + 6 / den) * 36));
+        digitSquishFactor = 17 / 36 + absDen / 
+          (absDen ** (1 + 6 / absDen) * 36);
       }
-      for (i = 0; i < den; i++) {
+      for (i = 0; i < absDen; i++) {
         x = res / 2 + digitSquishFactor * res * 
-          Math.cos(Math.PI / 2 - (i / den) * Math.PI * 2);
+          Math.cos(Math.PI / 2 - (i / absDen) * Math.PI * 2);
         y = disp + res / 2 - digitSquishFactor * res * 
-          Math.sin(Math.PI / 2 - (i / den) * Math.PI * 2);
+          Math.sin(Math.PI / 2 - (i / absDen) * Math.PI * 2);
         ctx.fillText(i, x - fSize / 3 , y + fSize / 3);
       }
     }
   }
 
   // Don't draw lines for only one point.
-  if (den == 1) {
+  if (absDen == 1) {
    return;
   }
 
@@ -569,16 +582,18 @@ function draw() {
       // Using gradients
       color2 = document.getElementById("gradientColor1").value;
       for (i = 0; i < stopping; i++) {
-        drawGradientLine(ctx, points[remainders[i]], 
-          points[remainders[i + 1]], color1, color2);
+        drawGradientLine(ctx, points[Math.abs(remainders[i])], 
+          points[Math.abs(remainders[i + 1])], color1, color2);
       }
     } else {
       // Not using gradients
       ctx.strokeStyle = color1;
       ctx.beginPath();
-      ctx.moveTo(points[remainders[0]][0], points[remainders[0]][1]);
+      ctx.moveTo(points[Math.abs(remainders[0])][0], 
+                 points[Math.abs(remainders[0])][1]);
       for (i = 1; i <= stopping; i++) {
-        ctx.lineTo(points[remainders[i]][0], points[remainders[i]][1]);
+        ctx.lineTo(points[Math.abs(remainders[i])][0], 
+                   points[Math.abs(remainders[i])][1]);
       }
       ctx.stroke();
     }
@@ -598,22 +613,24 @@ function draw() {
       // Using gradients
       color2 = document.getElementById("gradientColor2").value;
       for (i = repeatStart; i < remainders.length - 1; i++) {
-        drawGradientLine(ctx, points[remainders[i]], 
-          points[remainders[i + 1]], color1, color2);
+        drawGradientLine(ctx, points[Math.abs(remainders[i])], 
+          points[Math.abs(remainders[i + 1])], color1, color2);
       }
-      drawGradientLine(ctx, points[remainders[remainders.length - 1]], 
-        points[remainders[repeatStart]], color1, color2);
+      drawGradientLine(ctx, 
+        points[Math.abs(remainders[remainders.length - 1])], 
+        points[Math.abs(remainders[repeatStart])], color1, color2);
     } else {
       // Not using gradients
       ctx.strokeStyle = color1;
       ctx.beginPath();
-      ctx.moveTo(points[remainders[repeatStart]][0], 
-                 points[remainders[repeatStart]][1]);
+      ctx.moveTo(points[Math.abs(remainders[repeatStart])][0], 
+                 points[Math.abs(remainders[repeatStart])][1]);
       for (i = repeatStart; i < remainders.length; i++) {
-        ctx.lineTo(points[remainders[i]][0], points[remainders[i]][1]);
+        ctx.lineTo(points[Math.abs(remainders[i])][0], 
+                   points[Math.abs(remainders[i])][1]);
       }
-      ctx.lineTo(points[remainders[repeatStart]][0], 
-                 points[remainders[repeatStart]][1]);
+      ctx.lineTo(points[Math.abs(remainders[repeatStart])][0], 
+                 points[Math.abs(remainders[repeatStart])][1]);
       ctx.stroke();
     }
   }

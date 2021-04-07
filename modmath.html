@@ -4,7 +4,7 @@
 <meta charset = "UTF-8">
 
 <style>
-@import url('https://fonts.googleapis.com/css?family=Lacquer|Hi+Melody|Inconsolata&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Dosis|Inconsolata&display=swap');
 
 h4 {
   font-size: 1em;
@@ -71,12 +71,39 @@ html {
   justify-content: center;
 }
 
+.back {
+  text-align: left;
+  font-family: Dosis;
+  font-weight: normal;
+  font-style: normal;
+  color: black;
+}
+
+.backcenter {
+  clear: both;
+  padding: 0.5em;
+  text-align: center;
+  margin: auto;
+  font-family: Dosis;
+  font-weight: normal;
+  font-style: normal;
+  color: black;
+}
+
+.no-underline {
+  text-decoration: none;
+}
+
 </style>
 
 <script src="modulus.js"></script>
 
 <body>
 <noscript> <b>Enable JavaScript to use this page.</b> </noscript>
+
+<header>
+  <a href="index.html" class="no-underline"> <h2 class="back"> Return </h2> </a>
+</header>
 
 <p class="center">
   This applet calulates floating point division in any base and displays the 
@@ -100,17 +127,21 @@ html {
     <div class="entry">
       <label>
         <input type="checkbox" id="limitPrecision" 
-           onclick="checkField('limitPrecision', 'precision');" checked /> 
+          onclick="checkField('limitPrecision', 'precision');" checked /> 
         Max precision 
         <input type="number" id="precision" value=50 />
       </label>
     </div>
   	<div class="entry">
   	  <label><input type="checkbox" id="modBase10" checked /> Show remainders in base 10 </label>
-      </div>
+    </div>
+    <div class="entry">
+      <label><input type="checkbox" id="displayValues" 
+        onclick="checkField('displayValues', 'alignValues');" checked /> Display values </label>
+    </div>
   	<div class="entry">
   	  <label><input type="checkbox" id="alignValues" /> Align values </label>
-      </div>
+    </div>
   	<div class="entry">
   	  <label>
         <input type="checkbox" id="includePlot" 
@@ -216,6 +247,10 @@ html {
 <div class="center">
   <canvas class="plot" id="plot" width="600" height="600"></canvas>
 </div>
+
+<footer>
+  <a href="index.html" class="no-underline"> <h2 class="backcenter"> Return </h2> </a>
+</footer>
 
 </body>
 </html>
