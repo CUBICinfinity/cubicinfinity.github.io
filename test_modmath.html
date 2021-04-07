@@ -81,7 +81,8 @@ html {
 <p class="center">
   This applet calulates floating point division in any base and displays the 
   modulus pattern of remainders. <br/>
-  "R>" indicates the start of a repeating sequence of digits.
+  "R>" indicates the start of a repeating sequence of digits. <br/>
+  Choose higher contrast colors for large denominators.
 </p>
 
 <div class="fields">
@@ -136,7 +137,7 @@ html {
 	  	<input type="checkbox" id="enableBackground" 
 	  	    onclick="checkField('enableBackground', 'backgroundColor');" checked />
 	  	Background color
-	  	<input type="text" id="backgroundColor" value="black" />
+	  	<input type="text" id="backgroundColor" value="#111" />
     </label>
 	</div>
 	<div class="entry">
@@ -144,7 +145,7 @@ html {
 	  	<input type="checkbox" id="enablePoints" 
 	  	  onclick="checkField('enablePoints', 'pointColor');" checked /> 
 	  	Point color 
-	  	<input type="text" id="pointColor" value="#800800" />
+	  	<input type="text" id="pointColor" value="#399" />
 	  </label>
 	</div>
 	<div class="entry">
@@ -157,7 +158,7 @@ html {
                  checkField(['enableLine1', 'enableGradient1'], 'gradientColor1');"
         checked />
 	  	Initial line color from
-      <input type="text" id="lineColor1" value="#1100ee88" />
+      <input type="text" id="lineColor1" value="#1ee2" />
     </label>
 	</div>
   <div class="entry">
@@ -165,14 +166,14 @@ html {
       <input type="checkbox" id="enableGradient1" 
         onclick="checkField('enableGradient1', 'gradientColor1');" /> 
       Initial line color to
-      <input type="text" id="gradientColor1" value="#bb00dd88" disabled />
+      <input type="text" id="gradientColor1" value="#90ca" disabled />
     </label>
   </div>
 	<div class="entry">
     <label> 
       <input type="checkbox" id="enableLine2" checked disabled />
   	  Repeating line color from 
-      <input type="text" id="lineColor2" value="#cc00ff" />
+      <input type="text" id="lineColor2" value="#60f" />
     </label>
 	</div>
   <div class="entry">
@@ -180,7 +181,7 @@ html {
       <input type="checkbox" id="enableGradient2" 
         onclick="checkField('enableGradient2', 'gradientColor2');" /> 
       Repeating line color to
-      <input type="text" id="gradientColor2" value="#00ffff" disabled />
+      <input type="text" id="gradientColor2" value="#f06" disabled />
     </label>
   </div>
 	<div class="entry">

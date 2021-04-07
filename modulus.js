@@ -9,9 +9,9 @@ Sanitize inputs &/| escape outputs (a good practice, even if not necessary here)
 
 Unlikely TODO:
 Make including zero in the circle an option
-Expand supported values, for example, base 1
+Expand on supported values; perhaps include base 1.
 Add support for decimal points in inputs.
-Identify earlier repeat point for graphing purposes only.
+Identify earlier repeat point, for graphing purposes only.
 
 Other comments:
 
@@ -108,6 +108,8 @@ function validateNumbers() {
   if (limitPrecision == true && isNaN(precision)) {
     valid = false;
     document.getElementById("precision").style.borderColor = "red";
+  } else if (precision < 1) {
+    document.getElementById("precision").style.borderColor = "yellow";
   } else {
     document.getElementById("precision").style.removeProperty('border');
   }
