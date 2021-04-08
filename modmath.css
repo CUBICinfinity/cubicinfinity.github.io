@@ -17,6 +17,10 @@ header {
   flex-direction: column;
 }
 
+a {
+  color: black;
+}
+
 .button {
   padding: 0.5em;
   margin: 0.5em auto;
@@ -73,6 +77,7 @@ header {
   font-family: Dosis;
   font-weight: normal;
   font-style: normal;
+  font-size: 1.25em;
   color: black;
 }
 
@@ -84,6 +89,7 @@ header {
   font-family: Dosis;
   font-weight: normal;
   font-style: normal;
+  font-size: 1.25em;
   color: black;
 }
 
