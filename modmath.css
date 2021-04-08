@@ -102,3 +102,13 @@ a {
   margin: auto;
   max-width: 50em;
 }
+
+@media only screen and (max-width: 37.5em) {
+  .section{
+    flex-direction: column;
+  }
+  
+  .fields{
+    flex-direction: column;
+  }
+}
