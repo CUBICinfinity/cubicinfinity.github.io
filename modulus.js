@@ -195,6 +195,9 @@ function compute() {
     return;
   }
   document.getElementById("debug").innerHTML = "";
+
+  // Unhide plot
+  document.getElementById("plot").style.display = "block";
   
   // Copy values from form
   var num = document.getElementById("numerator").value;
