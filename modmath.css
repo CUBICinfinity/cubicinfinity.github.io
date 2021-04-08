@@ -104,10 +104,6 @@ a {
 }
 
 @media only screen and (max-width: 37.5em) {
-  .section{
-    flex-direction: column;
-  }
-  
   .fields{
     flex-direction: column;
   }
