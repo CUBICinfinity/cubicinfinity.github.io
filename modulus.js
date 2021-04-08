@@ -175,6 +175,13 @@ function showHideElement(checkId, elementId, checkToShow = true,
   }
 }
 
+// Customized hide function used for "plot" element
+function hidePlot(checkId) {
+  if (document.getElementById(checkId).checked == false) {
+    document.getElementById("plot").style.display = "none";
+  }
+}
+
 // onclick "Compute"
 function compute() {
   // Enforces only integers. I may provide support for floats later.
@@ -195,9 +202,6 @@ function compute() {
     return;
   }
   document.getElementById("debug").innerHTML = "";
-
-  // Unhide plot
-  document.getElementById("plot").style.display = "block";
   
   // Copy values from form
   var num = document.getElementById("numerator").value;
@@ -291,6 +295,8 @@ function compute() {
   // Update plot
   if (document.getElementById("includePlot").checked == true) {
     draw();
+    // Unhide plot
+    document.getElementById("plot").style.display = "block";
   }
 }
 
@@ -410,6 +416,9 @@ function draw() {
   if (validateAppearance() == false) {
     return;
   }
+
+  // Show plot if hidden
+  document.getElementById("plot").style.display = "flex";
 
   var plot = document.getElementById("plot");
   var ctx = plot.getContext("2d");

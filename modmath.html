@@ -1,114 +1,21 @@
 <!DOCTYPE html>
 <html>
-<title>Modular Visualizer - cubicinfinity.github.io</title>
-<meta charset = "UTF-8">
-
-<style>
-@import url('https://fonts.googleapis.com/css?family=Dosis|Inconsolata&display=swap');
-
-h4 {
-  font-size: 1em;
-  display: flex;
-  justify-content: center;
-  margin: 1em;
-}
-
-html {
-  font-family: "Inconsolata";
-  display: flex;
-  justify-content: center;
-}
-
-.button {
-  padding: 0.5em;
-  margin: 0.5em auto;
-  width: 15em;
-  background: #d9d9d9;
-  color: #444;
-  text-align: center;
-  font-size: 1em;
-  cursor: pointer;
-  transition: 0.3s;
-  border-radius: 0;
-  display: flex;
-  justify-content: center;
-}
-
-.fields{
-  font-size: 1em;
-  display: flex;
-  justify-content: center;
-}
-
-.section {
-  margin: 1em;
-  display: block;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-}
-
-.entry {
-  display: flex;
-  justify-content: auto;
-  margin: 0.25em 0;
-}
-
-.bar {
-  background-color: #ada;
-  display: block;
-  text-align: center;
-  padding: 0.1em;
-  min-width: 100%;
-}
-
-.plot {
-  margin-bottom: 2em;
-  display: none;
-}
-
-.center {
-  display: flex;
-  justify-content: center;
-}
-
-.back {
-  text-align: left;
-  font-family: Dosis;
-  font-weight: normal;
-  font-style: normal;
-  color: black;
-}
-
-.backcenter {
-  clear: both;
-  padding: 0.5em;
-  text-align: center;
-  margin: auto;
-  font-family: Dosis;
-  font-weight: normal;
-  font-style: normal;
-  color: black;
-}
-
-.no-underline {
-  text-decoration: none;
-}
-
-</style>
-
-<script src="modulus.js"></script>
+<head>
+  <title>Modular Visualizer - cubicinfinity.github.io</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="modmath.css" type="text/css" charset="utf-8"/>
+  <script src="modulus.js" type="text/javascript"></script>
+</head>
 
 <body>
 <noscript> <b>Enable JavaScript to use this page.</b> </noscript>
 
-<header>
-  <a href="index.html" class="no-underline"> <h2 class="back"> Return </h2> </a>
-</header>
+<a href="index.html" class="margins no-underline"> <h2 class="back"> Return </h2> </a>
 
 <p class="center">
   This app calulates floating point division in any base and displays the 
-  modulus pattern of remainders. <br/>
+  modulus pattern of remainders.<br/>
   "R>" indicates the start of a repeating sequence of digits. <br/>
   Choose higher contrast colors for large denominators. <br/>
   You may send me created images to put in a gallery.
@@ -148,7 +55,7 @@ html {
   	  <label>
         <input type="checkbox" id="includePlot" 
     	  	onclick="showHideElement('includePlot', 'plotSettings', true, showType = 'flex');
-    	  	         showHideElement('includePlot', 'plot');" checked /> 
+    	  	         hidePlot('includePlot');" checked /> 
         Generate graph 
       </label>
     </div>
