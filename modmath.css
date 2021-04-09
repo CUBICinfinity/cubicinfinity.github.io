@@ -100,7 +100,7 @@ a {
 .margins {
   display: block;
   margin: auto;
-  max-width: 50em;
+  max-width: 51em;
 }
 
 @media only screen and (max-width: 37.5em) {
