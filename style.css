@@ -138,7 +138,7 @@ a {
   text-decoration: none;
 }
 
-.frame:hover {
+.frame:hover, .frame:focus {
   transform: scale(1.025);
   transition: 0.07s;
 }

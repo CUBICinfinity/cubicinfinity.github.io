@@ -3,7 +3,6 @@ TODO:
 Improve printing with align results
 
 Optional TODO:
-Make Compute and Update buttons "tabbable"
 Draw loops on repeated digits
 Sanitize inputs &/| escape outputs (a good practice, even if not necessary here)
 
@@ -25,7 +24,7 @@ organizational issues.
 var remainders = [];
 var repeatStart = 0;
 var den = 0;
-var plotReady = false;
+var plotReady = false
 
 // Compare the values of two length 2 arrays
 function valueMatch(a1, a2) {
