@@ -48,7 +48,7 @@ a {
   margin: 1em;
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
+  justify-content: space-between;
 }
 
 .entry {

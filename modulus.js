@@ -546,7 +546,7 @@ function draw() {
   // Draw lines...
 
   // Line style
-  var relativeLineThickness = 2;
+  var relativeLineThickness = document.getElementById("lineThickness").value;
   ctx.lineWidth = radius / 3 * relativeLineThickness;
   ctx.lineCap = "round";
   
