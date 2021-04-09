@@ -3,6 +3,7 @@ TODO:
 Improve printing with align results
 
 Optional TODO:
+Add option to control line thickness
 Draw loops on repeated digits
 Sanitize inputs &/| escape outputs (a good practice, even if not necessary here)
 
@@ -545,7 +546,8 @@ function draw() {
   // Draw lines...
 
   // Line style
-  ctx.lineWidth = radius / 3;
+  var relativeLineThickness = 2;
+  ctx.lineWidth = radius / 3 * relativeLineThickness;
   ctx.lineCap = "round";
   
   // Variables to use
