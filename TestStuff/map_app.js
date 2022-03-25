@@ -117,13 +117,13 @@ function initMap() {
   });
 
   // Load the stores GeoJSON onto the map.
-  map.data.loadGeoJson('/TestStuff/map_locations.json', {idPropertyName: 'storeid'});
+  map.data.loadGeoJson('TestStuff/map_locations.json', {idPropertyName: 'storeid'});
 
   // Define the custom marker icons, using the store's "category".
   map.data.setStyle((feature) => {
     return {
       icon: {
-        url: `/TestStuff/map_img/icon_${feature.getProperty('category')}.png`,
+        url: `TestStuff/map_img/icon_${feature.getProperty('category')}.png`,
         scaledSize: new google.maps.Size(64, 64),
       },
     };
@@ -141,7 +141,7 @@ function initMap() {
     const phone = event.feature.getProperty('phone');
     const position = event.feature.getGeometry().get();
     const content = sanitizeHTML`
-      <img style="float:left; width:200px; margin-top:30px" src="/TestStuff/map_img/logo_${category}.png">
+      <img style="float:left; width:200px; margin-top:30px" src="TestStuff/map_img/logo_${category}.png">
       <div style="margin-left:220px; margin-bottom:20px;">
         <h2>${name}</h2><p>${description}</p>
         <p><b>Open:</b> ${hours}<br/><b>Phone:</b> ${phone}</p>
