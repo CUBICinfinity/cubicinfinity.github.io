@@ -1,1 +1,1 @@
-# [cubicinfinity.github.io](cubicinfinity.github.io)
+# [cubicinfinity.github.io](https://cubicinfinity.github.io)
