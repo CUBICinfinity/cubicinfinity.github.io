@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css?family=Dosis|Barlow|Sedgwick+Ave+Display|Lacquer&display=swap');
 
+/*
 @font-face {
     font-family: 'cubicinfinity';
     src: url('cu.inf/cubicinfinity-regular-webfont.woff2') format('woff2'),
@@ -8,6 +9,7 @@
     font-weight: normal;
     font-style: normal;
 }
+*/
 
 body {
   background-color: #f9f9f9;
