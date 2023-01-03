@@ -24,6 +24,11 @@ a {
   align: center;
 }
 
+.header {
+  width: 70em;
+  margin: auto;
+}
+
 .logo {
   float: left;
   font-family: 'cubicinfinity';
