@@ -44,7 +44,6 @@ a {
 .bio {
   float: right;
   padding: 0.5em;
-  margin-right: 10%;
   font-family: Dosis;
   font-weight: normal;
   font-style: normal;
@@ -135,6 +134,7 @@ a {
     float: left;
     margin: 0;
     margin-bottom: 1em;
+    margin-right: 10%;
   }
 }
 
